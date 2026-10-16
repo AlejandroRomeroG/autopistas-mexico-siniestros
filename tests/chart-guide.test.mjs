@@ -10,9 +10,11 @@ const options = { maxHeight: 140, minWidth: 2, maxWidth: 32, width: 1000, height
 
 function polygon(bar, height) {
   const { point: p, tangent: t, normal: n, width: w } = bar;
+  const start = bar.baseStart || { x: p.x - t.x * w / 2, y: p.y - t.y * w / 2 };
+  const end = bar.baseEnd || { x: p.x + t.x * w / 2, y: p.y + t.y * w / 2 };
   return [
-    [p.x - t.x * w / 2, p.y - t.y * w / 2], [p.x + t.x * w / 2, p.y + t.y * w / 2],
-    [p.x + t.x * w / 2 + n.x * height, p.y + t.y * w / 2 + n.y * height], [p.x - t.x * w / 2 + n.x * height, p.y - t.y * w / 2 + n.y * height],
+    [start.x, start.y], [end.x, end.y],
+    [end.x + n.x * height, end.y + n.y * height], [start.x + n.x * height, start.y + n.y * height],
   ];
 }
 
@@ -38,7 +40,7 @@ function assertClear(layout, anchors) {
     for (const value of [bar.point.x, bar.point.y, bar.tangent.x, bar.tangent.y, bar.normal.x, bar.normal.y, bar.width, layout.maxHeight]) assert.ok(Number.isFinite(value));
     assert.ok(Math.abs(Math.hypot(bar.tangent.x, bar.tangent.y) - 1) < 1e-6, 'unit tangent');
     assert.ok(Math.abs(bar.tangent.x * bar.normal.x + bar.tangent.y * bar.normal.y) < 1e-6, 'orthogonal normal');
-    assert.ok(bar.width >= 2 && bar.width <= 32);
+    assert.ok(bar.width > 0 && bar.width <= 32, 'nominal slots may be subpixel at a whole-road overview');
     return { id: anchor.id, points: polygon(bar, layout.maxHeight * anchor.count / maximum) };
   });
   for (let first = 0; first < bars.length; first++) for (let second = first + 1; second < bars.length; second++) {
@@ -116,24 +118,24 @@ test('coincident bins and isolated records get separate usable chart slots', () 
   assertClear(fallback, [anchors[0]]);
 });
 
-test('nearby independent axes move together instead of collapsing the common height', () => {
+test('separate local branches keep exact observations and deterministic geometry', () => {
   const anchors = [referenceAnchor('north', [1, 20], [1, 19.99], [1, 20.01], 2), referenceAnchor('east', [1.005, 20.005], [.995, 20.005], [1.015, 20.005], 1)];
   const source = JSON.stringify(anchors), layout = projectChartGuide(buildChartGuide([], anchors), project, options);
-  assert.equal(layout.runs.length, 2, 'packing keeps source components separate');
-  assert.ok(layout.maxHeight >= 100, 'moving whole graphic axes preserves a useful common count scale');
+  assert.equal(layout.runs.length, 2, 'source components remain separate');
   assertClear(layout, anchors);
-  assert.equal(JSON.stringify(anchors), source, 'packing does not move the underlying observed records');
+  assert.equal(JSON.stringify(anchors), source, 'the chart never moves the underlying observed records');
+  assert.deepEqual(layout, projectChartGuide(buildChartGuide([], anchors), project, options));
 });
 
-async function realRoad(roadId) {
+async function realRoad(roadId, binSize = 5) {
   const data = JSON.parse(await readFile(new URL('../src/data/pilot.json', import.meta.url), 'utf8'));
   const geo = JSON.parse(await readFile(new URL('../src/data/roads.geojson', import.meta.url), 'utf8'));
   const feature = geo.features.find(feature => feature.properties.roadId === roadId);
   const parts = feature.geometry.type === 'MultiLineString' ? feature.geometry.coordinates : [feature.geometry.coordinates];
-  const bins = groupBins(filterRecords(data.records, { roadId }), 5);
+  const bins = groupBins(filterRecords(data.records, { roadId }), binSize);
   const anchors = bins.map(bin => {
     const ordered = [...bin.records].sort((a, b) => a.km - b.km), representative = ordered[Math.floor(ordered.length / 2)];
-    return { id: bin.id, count: bin.count, ...nearestOnLines(representative.nearestRoadCoordinates || representative.coordinates, parts) };
+    return { id: bin.id, count: bin.count, km: representative.km, from: bin.from, to: bin.to, ...nearestOnLines(representative.nearestRoadCoordinates || representative.coordinates, parts) };
   });
   const coordinates = parts.flat(), minX = Math.min(...coordinates.map(point => point[0])), maxX = Math.max(...coordinates.map(point => point[0])), minY = Math.min(...coordinates.map(point => point[1])), maxY = Math.max(...coordinates.map(point => point[1]));
   const scale = Math.min(650 / (maxX - minX), 350 / (maxY - minY));
@@ -147,8 +149,10 @@ for (const roadId of ['mexico-queretaro', 'mexico-cuernavaca', 'mexico-puebla', 
     const guide = buildChartGuide(parts, anchors), layout = projectChartGuide(guide, fit, options);
     assert.equal(layout.bars.size, anchors.length);
     assert.ok(layout.maxHeight >= 8, `reference height must remain visible: ${layout.maxHeight}`);
-    if (roadId === 'acatzingo-cd-mendoza') assert.ok(layout.maxHeight >= 65, 'connected carriageways must not collapse the common scale');
-    if (roadId === 'guadalajara-colima') assert.ok(layout.maxHeight >= 65, 'nearby local axes must not collapse the common scale');
+    if (['acatzingo-cd-mendoza', 'mexico-queretaro', 'mexico-cuernavaca'].includes(roadId)) {
+      assert.equal(layout.runs.length, 1, 'the main corridor has one continuous reference axis');
+      assert.equal(layout.maxHeight, options.maxHeight, 'broad geographic smoothing preserves the requested count scale');
+    }
     assertClear(layout, anchors);
     assert.equal(JSON.stringify({ parts, anchors }), sourceCopy, 'observed coordinates and reference counts are immutable');
     const before = projectChartGuide(guide, fit, options);
@@ -156,5 +160,48 @@ for (const roadId of ['mexico-queretaro', 'mexico-cuernavaca', 'mexico-puebla', 
     const selectedIds = anchors.filter((_, index) => index % 2).map(anchor => anchor.id);
     for (const id of selectedIds) assert.deepEqual(before.bars.get(id), layout.bars.get(id));
     assert.equal(before.maxHeight, layout.maxHeight, 'filter changes cannot change the common count scale');
+  });
+}
+
+test('the geographic spine preserves endpoints and route parameters through a winding bend', () => {
+  const road = Array.from({ length: 151 }, (_, index) => [-100 + index * .007, 20 + Math.sin(index * Math.PI / 50) * .18]);
+  const anchors = [20, 50, 80, 110].map(index => referenceAnchor(index, road[index], road[index - 1], road[index + 1]));
+  const guide = buildChartGuide([road], anchors), run = guide.runs[0];
+  assert.deepEqual(run.spine.points[0], run.points[0]);
+  assert.deepEqual(run.spine.points.at(-1), run.points.at(-1));
+  assert.ok(run.spine.points.length > 30, 'regular sampling resolves the complete corridor');
+  assert.ok(run.anchors.every((anchor, index, list) => !index || anchor.position > list[index - 1].position), 'bins retain their original-road parameter order');
+  const before = JSON.stringify(guide);
+  const close = projectChartGuide(guide, point => { const p = project(point); return { x: p.x * 4, y: p.y * 4 }; }, options);
+  const far = projectChartGuide(guide, project, options);
+  assert.equal(JSON.stringify(guide), before, 'projection does not rebuild the geographic spine');
+  for (const anchor of anchors) {
+    const a = close.bars.get(anchor.id), b = far.bars.get(anchor.id);
+    assert.ok(a.normal.x * b.normal.x + a.normal.y * b.normal.y > .999999, 'zoom cannot flip the chart side or jitter its normals');
+    assert.equal(a.position, b.position, 'zoom keeps the same original-road parameter');
+  }
+});
+
+test('bar edges follow nominal kilometre intervals instead of bridging empty bins', () => {
+  const road = [[-100, 20], [-99, 20]];
+  const anchors = [
+    { ...referenceAnchor('a', [-99.9, 20], ...road), from: 10, to: 15, km: 12.5 },
+    { ...referenceAnchor('b', [-99.5, 20], ...road), from: 50, to: 55, km: 52.5 },
+  ];
+  const layout = projectChartGuide(buildChartGuide([road], anchors), project, options);
+  const widths = [...layout.bars.values()].map(bar => Math.hypot(bar.baseEnd.x - bar.baseStart.x, bar.baseEnd.y - bar.baseStart.y));
+  assert.ok(Math.abs(widths[0] - widths[1]) < .001, 'equal kilometre intervals have equal widths on a straight route');
+  assert.ok(widths.every(width => width > 8 && width < 16), 'a sparse histogram does not stretch a bar across its empty neighbour bins');
+  assertClear(layout, anchors);
+});
+
+for (const [roadId, binKm] of [['cuernavaca-acapulco', 1], ['estacion-don-nogales', 1], ['estacion-don-nogales', 2], ['libramiento-nororiente-de-queretaro', 2], ['libramiento-nororiente-de-queretaro', 20]]) {
+  test(`narrow and parallel ${roadId} ${binKm} km intervals retain a readable common scale`, async () => {
+    const { parts, anchors, fit } = await realRoad(roadId, binKm);
+    const guide = buildChartGuide(parts, anchors), layout = projectChartGuide(guide, fit, { ...options, binKm });
+    assert.ok(layout.maxHeight > 45, `count scale must not collapse because of one narrow interval: ${layout.maxHeight}`);
+    assertClear(layout, anchors);
+    if (roadId === 'libramiento-nororiente-de-queretaro') assert.equal(layout.runs.length, 1, 'unequal carriageway tails do not create two crossing axes');
+    assert.deepEqual(layout, projectChartGuide(guide, fit, { ...options, binKm }), 'layout stays deterministic through filters');
   });
 }

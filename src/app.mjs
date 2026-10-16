@@ -13,6 +13,7 @@ const canvas = $('density-overlay');
 const ctx = canvas.getContext('2d');
 const tooltip = $('map-tooltip');
 const pageSize = 15;
+const siniestroNoun = count => count===1?'siniestro':'siniestros';
 
 function currentTheme(){return document.documentElement.dataset.theme==='dark'?'dark':'light';}
 function barHeightLimit(width,height){return Math.min(150,Math.max(80,width*.12),height*.28);}
@@ -92,7 +93,7 @@ function updateWeekButtons() {
     button.setAttribute('aria-pressed', String(option.id === state.period));
     const count = getRows({period:option.id}).length;
     button.innerHTML=`<span aria-hidden="true"></span><span class="week-text">${option.label}</span><strong>${nf.format(count)}</strong>`;
-    button.setAttribute('aria-label', `${option.label}: ${count} registros en mapa en el horario elegido`);
+    button.setAttribute('aria-label', `${option.label}: ${count} ${siniestroNoun(count)} en mapa en el horario elegido`);
     button.addEventListener('click',()=>{state.period=option.id; update();});
     return button;
   }));
@@ -109,7 +110,7 @@ function buildAnchors() {
     const representative=ordered[Math.floor(ordered.length/2)];
     const nearest=nearestOnLines(representative.nearestRoadCoordinates || representative.coordinates,parts);
     if (!nearest) continue;
-    anchors.set(bin.id,{...nearest,id:bin.id,count:bin.count});
+    anchors.set(bin.id,{...nearest,id:bin.id,count:bin.count,from:bin.from,to:bin.to,km:representative.km});
   }
   const cacheKey=`${state.roadId}:${state.bin}`;
   if(!guideCache.has(cacheKey))guideCache.set(cacheKey,buildChartGuide(parts,[...anchors.values()]));
@@ -126,14 +127,14 @@ function update() {
   $('stat-count').textContent=nf.format(filtered.length);
   $('stat-bins').textContent=nf.format(bins.length);
   $('stat-peak').textContent=nf.format(Math.max(0,...bins.map(b=>b.count)));
-  $('selection-summary').innerHTML=`<strong>${esc(selectedRoad.name)}</strong><br>${esc(currentScope())}: <strong>${nf.format(filtered.length)}</strong> registros ubicables, agrupados cada ${state.bin} km.`;
+  $('selection-summary').innerHTML=`<strong>${esc(selectedRoad.name)}</strong><br>${esc(currentScope())}: <strong>${nf.format(filtered.length)}</strong> ${siniestroNoun(filtered.length)} en mapa, agrupados cada ${state.bin} km.`;
   $('coverage-note').textContent=(omitted ? `${nf.format(omitted)} de ${nf.format(eligible.length)} registros del filtro quedan fuera del mapa por ubicación no verificable. ` : 'Los registros del filtro superan los controles de fecha y ubicación. ')+(withoutKm ? `${withoutKm} registro en mapa no tiene kilometraje interpretable y se muestra sin barra. ` : '')+'Consulta la metodología.';
-  $('legend-max').textContent=`${scaleMax} registros`;
-  $('map-caption-text').textContent=`${nf.format(filtered.length)} registros en mapa · ${periodLabel()}`;
+  $('legend-max').textContent=`${scaleMax} ${siniestroNoun(scaleMax)}`;
+  $('map-caption-text').textContent=`${nf.format(filtered.length)} ${siniestroNoun(filtered.length)} en mapa · ${periodLabel()}`;
   $('road-label').textContent=selectedRoad.name.replaceAll(' - ',' – ');
   $('empty-state').hidden=filtered.length>0;
   const allDay=state.start%24===state.end%24;
-  $('empty-state').querySelector('strong').textContent=eligible.length && !filtered.length ? 'Sin registros ubicables para este filtro' : selectedRoad.mainCount===0 ? 'Sin registros con fecha válida' : 'Sin registros en este filtro';
+  $('empty-state').querySelector('strong').textContent=eligible.length && !filtered.length ? 'Sin siniestros en mapa para este filtro' : selectedRoad.mainCount===0 ? 'Sin registros con fecha válida' : 'Sin registros en este filtro';
   $('empty-state').querySelector('p').textContent=eligible.length ? 'La ubicación de estos registros no supera los controles del piloto. Consulta los datos completos en metodología.' : selectedRoad.mainCount===0 ? 'La fuente sólo reporta registros con fechas fuera de las semanas anunciadas para esta carretera.' : allDay ? 'Prueba la otra semana o explora una autopista distinta.' : 'Prueba otro rango de horas o restablece el reloj.';
   $('empty-reset').hidden=allDay;
   updateWeekButtons();
@@ -163,7 +164,7 @@ function fitRoad() {
   const h=canvas.clientHeight,w=canvas.clientWidth;
   const mapRect=$('map').getBoundingClientRect(),filterRect=$('sidebar').getBoundingClientRect(),dockRect=document.querySelector('.exploration-dock')?.getBoundingClientRect();
   const panelOverMap=!document.body.classList.contains('panel-collapsed')&&filterRect.left<mapRect.right&&filterRect.right>mapRect.left;
-  const topCover=Math.max(70,barHeightLimit(w,h)+24);
+  const topCover=Math.max(70,barHeightLimit(w,h)+44);
   const bottomCover=(dockRect?Math.max(40,mapRect.bottom-dockRect.top+22):50)+barHeightLimit(w,h);
   const maxCoveredHeight=h*.65,coverageScale=Math.min(1,maxCoveredHeight/(topCover+bottomCover));
   const sideMargin=narrow?Math.min(35,w*.1):Math.min(100,w*.15);
@@ -180,8 +181,8 @@ function updateMarkers() {
   }).filter(x=>bounds.contains(x.center)).sort((a,b)=>b.road.mappedCount-a.road.mappedCount).slice(0,4);
   for (const {road,center} of candidates) {
     const button=document.createElement('button');button.type='button';button.className='road-marker';button.textContent=road.name.replaceAll(' - ','–');
-    button.setAttribute('aria-label',`Explorar ${road.name}, ${road.mappedCount} registros ubicables en ambas semanas`);
-    const show=()=>{const p=map.project(center);showTooltip(p.x,p.y,`<strong>${esc(road.name)}</strong><span>${road.mappedCount} registros ubicables</span><br><span class="muted">30 jun–13 jul 2025 · Pulsa para explorar</span>`);};
+    button.setAttribute('aria-label',`Explorar ${road.name}, ${road.mappedCount} ${siniestroNoun(road.mappedCount)} en ambas semanas`);
+    const show=()=>{const p=map.project(center);showTooltip(p.x,p.y,`<strong>${esc(road.name)}</strong><span>${road.mappedCount} ${siniestroNoun(road.mappedCount)}</span><br><span class="muted">30 jun–13 jul 2025 · Pulsa para explorar</span>`);};
     button.addEventListener('mouseenter',show);button.addEventListener('focus',show);button.addEventListener('mouseleave',hideTooltip);button.addEventListener('blur',hideTooltip);
     button.addEventListener('click',()=>{hideTooltip();selectRoad(road.id);});
     markers.push(new maplibregl.Marker({element:button}).setLngLat(center).addTo(map));
@@ -189,26 +190,57 @@ function updateMarkers() {
 }
 
 function scheduleDraw() {if(pendingFrame)return;pendingFrame=true;requestAnimationFrame(()=>{pendingFrame=false;drawBars();});}
+function smoothCanvasPath(points){
+  ctx.beginPath();if(!points.length)return;
+  ctx.moveTo(points[0].x,points[0].y);
+  for(let i=1;i<points.length-1;i++)ctx.quadraticCurveTo(points[i].x,points[i].y,(points[i].x+points[i+1].x)/2,(points[i].y+points[i+1].y)/2);
+  if(points.length>1)ctx.lineTo(points.at(-1).x,points.at(-1).y);
+}
+function countLevels(maximum){
+  const target=maximum/3,magnitude=10**Math.floor(Math.log10(Math.max(1,target)));
+  const step=Math.max(1,[1,2,5,10].map(n=>n*magnitude).find(n=>n>=target)||magnitude*10);
+  const levels=[];for(let value=step;value<=maximum;value+=step)levels.push(value);
+  return levels;
+}
+function drawGuide(layout,width,height,colors){
+  const main=layout.runs.reduce((best,run)=>run.length>best.length?run:best,[]);
+  const levels=countLevels(scaleMax);
+  for(const run of layout.runs){
+    if(run.length<2)continue;
+    const normals=run.map((p,i)=>{
+      if(p.normal)return p.normal;
+      const a=run[Math.max(0,i-6)],b=run[Math.min(run.length-1,i+6)],length=Math.hypot(b.x-a.x,b.y-a.y)||1;
+      return {x:(b.y-a.y)/length,y:-(b.x-a.x)/length};
+    });
+    for(const level of levels){
+      const h=layout.maxHeight*level/scaleMax;
+      const line=run.map((p,i)=>({x:p.x+normals[i].x*h,y:p.y+normals[i].y*h}));
+      smoothCanvasPath(line);ctx.strokeStyle=colors.ink;ctx.lineWidth=.75;ctx.globalAlpha=.2;ctx.stroke();
+      if(run===main&&h>=16){
+        const label=line.slice(Math.floor(line.length*.12),Math.ceil(line.length*.8)).find(p=>p.x>35&&p.x<width-40&&p.y>70&&p.y<height-35&&(p.y<height-225||p.x>550));
+        if(label){ctx.globalAlpha=.9;ctx.font='500 10px "Inter Tight",sans-serif';ctx.lineJoin='round';ctx.strokeStyle=colors.halo;ctx.lineWidth=3;ctx.strokeText(nf.format(level),label.x+4,label.y-4);ctx.fillStyle=colors.ink;ctx.fillText(nf.format(level),label.x+4,label.y-4);}
+      }
+    }
+    smoothCanvasPath(run);ctx.strokeStyle=colors.halo;ctx.lineWidth=3;ctx.globalAlpha=.85;ctx.stroke();
+    ctx.strokeStyle=colors.ink;ctx.lineWidth=1.25;ctx.globalAlpha=.72;ctx.stroke();
+  }
+  ctx.globalAlpha=1;
+}
 function drawBars() {
   if (!map||!selectedFeature||!chartGuide) {ctx.clearRect(0,0,canvas.width,canvas.height);barHits=[];return;}
   const width=canvas.clientWidth,height=canvas.clientHeight,dpr=Math.min(devicePixelRatio||1,2);
   if(canvas.width!==Math.round(width*dpr)||canvas.height!==Math.round(height*dpr)){canvas.width=Math.round(width*dpr);canvas.height=Math.round(height*dpr);}
   ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,width,height);barHits=[];
-  const layout=projectChartGuide(chartGuide,coordinate=>map.project(coordinate),{maxHeight:barHeightLimit(width,height),maxWidth:32,minWidth:2,width,height});
+  const layout=projectChartGuide(chartGuide,coordinate=>map.project(coordinate),{maxHeight:barHeightLimit(width,height),maxWidth:32,minWidth:2,binKm:state.bin,width,height});
   const colors=themeColors(currentTheme());
-  for(const run of layout.runs){
-    if(run.length<2)continue;
-    ctx.beginPath();run.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));
-    ctx.strokeStyle=colors.halo;ctx.lineWidth=4;ctx.globalAlpha=.8;ctx.stroke();
-    ctx.setLineDash([5,4]);ctx.strokeStyle=colors.ink;ctx.lineWidth=1.2;ctx.globalAlpha=.8;ctx.stroke();ctx.setLineDash([]);
-  }
-  ctx.globalAlpha=1;
+  drawGuide(layout,width,height,colors);
   for(const bin of bins){
     const bar=layout.bars.get(bin.id);if(!bar)continue;
     const p=bar.point,tx=bar.tangent.x,ty=bar.tangent.y,nx=bar.normal.x,ny=bar.normal.y,bw=bar.width;
     const h=bin.count/scaleMax*layout.maxHeight;
-    const points=[{x:p.x-tx*bw/2,y:p.y-ty*bw/2},{x:p.x+tx*bw/2,y:p.y+ty*bw/2},{x:p.x+tx*bw/2+nx*h,y:p.y+ty*bw/2+ny*h},{x:p.x-tx*bw/2+nx*h,y:p.y-ty*bw/2+ny*h}];
-    if(points.every(c=>c.x<-200||c.x>width+200||c.y<-200||c.y>height+200))continue;
+    const a=bar.baseStart||{x:p.x-tx*bw/2,y:p.y-ty*bw/2},b=bar.baseEnd||{x:p.x+tx*bw/2,y:p.y+ty*bw/2};
+    const points=[a,b,{x:b.x+nx*h,y:b.y+ny*h},{x:a.x+nx*h,y:a.y+ny*h}];
+    if(Math.max(...points.map(p=>p.x))<-200||Math.min(...points.map(p=>p.x))>width+200||Math.max(...points.map(p=>p.y))<-200||Math.min(...points.map(p=>p.y))>height+200)continue;
     ctx.beginPath();points.forEach((c,i)=>i?ctx.lineTo(c.x,c.y):ctx.moveTo(c.x,c.y));ctx.closePath();
     ctx.fillStyle=colorForCount(bin.count,scaleMax);ctx.globalAlpha=.85;ctx.fill();ctx.globalAlpha=1;ctx.strokeStyle='#ffffff9c';ctx.lineWidth=.7;ctx.stroke();
     barHits.push({bin,points});
@@ -221,7 +253,7 @@ function hideTooltip(){tooltip.hidden=true;}
 function inspectMap(event){
   if(map.isMoving())return hideTooltip();
   const hit=barHits.find(h=>inPolygon(event.point,h.points));
-  if(hit){const b=hit.bin;showTooltip(event.point.x,event.point.y,`<strong>${esc(selectedRoad.name)}</strong><span>Km ${nf.format(b.from)} a menos de ${nf.format(b.to)}</span><div class="tooltip-count">${b.count} <span style="font-size:11px;font-weight:500">registros</span></div><span class="muted">${esc(currentScope())}</span>`);map.getCanvas().style.cursor='pointer';return;}
+  if(hit){const b=hit.bin;showTooltip(event.point.x,event.point.y,`<strong>${esc(selectedRoad.name)}</strong><span>Km ${nf.format(b.from)} a menos de ${nf.format(b.to)}</span><div class="tooltip-count">${b.count} <span style="font-size:11px;font-weight:500">siniestros</span></div><span class="muted">${esc(currentScope())}</span>`);map.getCanvas().style.cursor='pointer';return;}
   const features=map.queryRenderedFeatures(event.point,{layers:map.getLayer('accident-points')?['accident-points']:[]});
   if(features.length){const r=data.records.find(r=>r.id===features[0].properties.recordId);if(r){showTooltip(event.point.x,event.point.y,`<strong>${esc(r.accidentType)}</strong><span>${shortDate(r.date)} · ≈ ${approximateTime(r)} · km ${esc(r.kmRaw)}</span><br><span class="muted">${esc(r.road)} · ${esc(r.direction)}<br>${r.injured} lesionados · ${r.deaths} fallecidos</span>`);map.getCanvas().style.cursor='pointer';return;}}
   hideTooltip();map.getCanvas().style.cursor='';
@@ -236,7 +268,7 @@ function createMap() {
     if(!reference)sources[id].attribution='Tiles © Esri · Sources: Esri, HERE, Garmin, © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>';
     layers.push({id,type:'raster',source:id,layout:{visibility:theme===currentTheme()?'visible':'none'}});
   }
-  map=new maplibregl.Map({container:'map',center:[-99.5,20.2],zoom:7.2,maxZoom:16,canvasContextAttributes:{antialias:true,preserveDrawingBuffer:true},attributionControl:true,style:{version:8,sources,layers}});
+  map=new maplibregl.Map({container:'map',center:[-99.5,20.2],zoom:7.2,maxZoom:16,maxPitch:0,pitchWithRotate:false,touchPitch:false,dragRotate:false,canvasContextAttributes:{antialias:true,preserveDrawingBuffer:true},attributionControl:true,style:{version:8,sources,layers}});
   map.addControl(new maplibregl.NavigationControl({showCompass:false}),'top-right');
   map.on('load',()=>{
     map.addSource('all-roads',{type:'geojson',data:roadsGeo});
@@ -266,10 +298,10 @@ function renderSources() {
   const outside=raw-period,unmapped=period-mapped;
   $('source-content').innerHTML=`
     <h3>Dos semanas de registros publicados</h3><p>Capas de accidentes de la red de cuota de la <a href="https://rnc.imt.mx/geossi/" target="_blank" rel="noopener">GeoPlataforma SICT / IMT</a>: <strong>30 de junio–6 de julio</strong> y <strong>7–13 de julio de 2025</strong>. Esta es una descarga histórica; no representa la totalidad de los siniestros, de las autopistas o del país.</p>
-    <div class="audit-strip"><div><strong>${raw}</strong><span>registros de origen</span></div><div><strong>${period}</strong><span>dentro del periodo</span></div><div><strong>${mapped}</strong><span>ubicables para el mapa</span></div></div>
-    <h3>Qué entra al mapa</h3><p>Cada conteo corresponde a un registro publicado, no a un evento único confirmado. Se conservan los posibles duplicados porque no hay una clave de evento documentada.</p><p>Se excluyen <strong>${outside}</strong> fechas fuera de la semana anunciada y <strong>${unmapped}</strong> registros del periodo sin trazo asignado o a más de 1 km del trazo oficial. Un registro ubicable tiene un kilometraje ambiguo: aparece como punto, pero no alimenta las barras. Los registros originales y las advertencias se conservan en la descarga completa. No se corrigen sus fechas ni posiciones.</p>
+    <div class="audit-strip"><div><strong>${raw}</strong><span>registros de origen</span></div><div><strong>${period}</strong><span>dentro del periodo</span></div><div><strong>${mapped}</strong><span>representados en el mapa</span></div></div>
+    <h3>Qué entra al mapa</h3><p>Cada conteo corresponde a un registro publicado, no a un evento único confirmado. Se conservan los posibles duplicados porque no hay una clave de evento documentada.</p><p>Se excluyen <strong>${outside}</strong> fechas fuera de la semana anunciada y <strong>${unmapped}</strong> registros del periodo sin trazo asignado o a más de 1 km del trazo oficial. Un registro con ubicación validada tiene un kilometraje ambiguo: aparece como punto, pero no alimenta las barras. Los registros originales y las advertencias se conservan en la descarga completa. No se corrigen sus fechas ni posiciones.</p>
     <h3 id="hour-explanation">Horas aproximadas</h3><p>La fuente publica la hora como valores entre 0 y 1 con dos decimales. El piloto los interpreta como <strong>fracciones de un día</strong> (valor × 24 horas). Es una interpretación inferida de los valores, sin diccionario de la capa que confirme la codificación. Su resolución observada equivale a <strong>14.4 minutos</strong>; no permite recuperar minutos exactos.</p><p>El reloj filtra estas horas aproximadas, incluyendo el inicio y excluyendo el final. Un intervalo de 22:00 a 06:00 combina ambos lados de medianoche dentro de las fechas seleccionadas. El valor original 1 se muestra como medianoche aproximada, con una advertencia. No se aplica conversión de zona horaria. Extremos iguales significan todo el día.</p>
-    <h3>Tramos y geometría</h3><p>Las barras cuentan registros por intervalos del <strong>kilometraje reportado</strong>, sumando ambos sentidos. Las barras se colocan sobre una <strong>guía visual simplificada</strong>, indicada con línea discontinua junto a la carretera. La guía procede de la geometría vial conectada, con curvas suavizadas y direcciones coherentes para reducir cruces entre barras. Sus bases son posiciones gráficas aproximadas; los puntos conservan las coordenadas publicadas. La altura y el color expresan el conteo; el ancho depende del espacio entre barras y no equivale a una distancia geográfica exacta. Los ajustes de altura se aplican por igual a todas las barras. La guía y la escala de referencia usan ambas semanas y todo el día y se conservan al cambiar horas o semana para una misma autopista y tamaño de tramo.</p><p>Los trazados proceden de la capa <code>red_vial_cuota_concesionario_geo</code> del IMT, con alias explícitos entre sus nombres y los de los accidentes. Se preservan calzadas y ramales; su suma no se presenta como longitud de la autopista. La geometría disponible puede ser anterior a 2025. Un tramo sin barra indica ausencia de registros seleccionados, sin acreditar cobertura o ausencia real de siniestros.</p>
+    <h3>Tramos y geometría</h3><p>Las barras cuentan registros por intervalos del <strong>kilometraje reportado</strong>, sumando ambos sentidos. Las barras se colocan sobre una <strong>guía visual simplificada</strong>, indicada con una curva continua junto a la carretera y líneas de escala de conteo. La guía se suaviza por distancia a lo largo de la geometría vial conectada y se separa de la envolvente de la carretera. Las direcciones de las barras se promedian sobre una ventana amplia y mantienen el mismo lado al cambiar el zoom. Sus bases son posiciones gráficas aproximadas; los puntos conservan las coordenadas publicadas. La altura y el color expresan el conteo; el ancho representa de forma aproximada el intervalo kilométrico, con márgenes y ajustes para valores incompatibles; no equivale a una distancia geográfica exacta. Los ajustes de altura se aplican por igual a todas las barras. La guía y la escala de referencia usan ambas semanas y todo el día y se conservan al cambiar horas o semana para una misma autopista y tamaño de tramo.</p><p>Los trazados proceden de la capa <code>red_vial_cuota_concesionario_geo</code> del IMT, con alias explícitos entre sus nombres y los de los accidentes. Se preservan calzadas y ramales; su suma no se presenta como longitud de la autopista. La geometría disponible puede ser anterior a 2025. Un tramo sin barra indica ausencia de registros seleccionados, sin acreditar cobertura o ausencia real de siniestros.</p>
     <h3>Revisión de históricos · 16 de octubre de 2026</h3><p>Se revisaron las capas públicas del IMT, reportes de CAPUFE y el catálogo histórico de Policía Federal. Los archivos descargables revisados de CAPUFE son agregados sin ubicación ni hora por evento. El enlace original del histórico de Policía Federal está caído y no se recuperó una copia de datos verificable. Por eso el piloto conserva estas dos semanas y no genera puntos a partir de totales.</p><p>Siniestralimap de Jalisco sí ofrece 2015–2025, pero cubre siniestros con víctimas en municipios metropolitanos y georreferencia al cruce vial más cercano; no respalda una serie nacional de autopistas de cuota. <a href="./data/history-search.json" target="_blank" rel="noopener">Consultar fuentes revisadas y opciones para ampliar ↗</a>.</p>
     <h3>Consulta y reutilización</h3><p>Fuentes: <a href="https://rnc.imt.mx/geossi/" target="_blank" rel="noopener">GeoPlataforma SICT</a> y <a href="https://rnc.imt.mx/geossi/recursos/ol3.js" target="_blank" rel="noopener">definición pública de las capas</a>. Fondo: Esri y sus contribuidores. Motor: MapLibre GL JS 5.6.0, distribuido con su licencia BSD.</p>
     <div class="source-links"><a href="./data/pilot.json" target="_blank" download="piloto-siniestros.json">Datos completos + advertencias · JSON</a><a href="./data/audit.json" target="_blank" download="auditoria-siniestros.json">Auditoría · JSON</a><a href="https://github.com/AlejandroRomeroG/autopistas-mexico-siniestros" target="_blank" rel="noopener">Código y reproducción ↗</a></div>`;
@@ -281,7 +313,7 @@ function renderRecords(){
   const pages=Math.max(1,Math.ceil(rows.length/pageSize));
   state.page=Math.max(0,Math.min(state.page,pages-1));
   $('records-heading').textContent=selectedRoad.name;
-  $('records-description').textContent=`${nf.format(rows.length)} registros en mapa · ${currentScope()}. Horas aproximadas según la interpretación descrita en metodología.`;
+  $('records-description').textContent=`${nf.format(rows.length)} siniestros en mapa · ${currentScope()}. Horas aproximadas según la interpretación descrita en metodología.`;
   $('records-pagination').textContent=`${state.page+1} / ${pages}`;
   $('records-prev').disabled=state.page===0;$('records-next').disabled=state.page>=pages-1;
   $('records-body').innerHTML=rows.slice(state.page*pageSize,(state.page+1)*pageSize).map(r=>`<tr><td>${shortDate(r.date)}</td><td>≈ ${approximateTime(r)}</td><td>${esc(r.kmRaw)}</td><td>${esc(r.accidentType)}</td><td>${r.injured}</td><td>${r.deaths}</td></tr>`).join('') || '<tr><td colspan="6">No hay registros para el filtro actual.</td></tr>';
@@ -296,7 +328,7 @@ async function init(){
   try{
     [data,roadsGeo]=await Promise.all([loadJson('./data/pilot.json'),loadJson('./data/roads.geojson')]);
     restoreView();
-    $('road-select').replaceChildren(...[...data.roads].sort((a,b)=>a.name.localeCompare(b.name,'es')).map(road=>{const option=document.createElement('option');option.value=road.id;option.textContent=`${road.name} · ${road.mappedCount} ubicables`;return option;}));
+    $('road-select').replaceChildren(...[...data.roads].sort((a,b)=>a.name.localeCompare(b.name,'es')).map(road=>{const option=document.createElement('option');option.value=road.id;option.textContent=`${road.name} · ${road.mappedCount} ${siniestroNoun(road.mappedCount)}`;return option;}));
     $('road-select').value=state.roadId;$('bin-select').value=String(state.bin);
     dial=new TimeDial($('time-dial'),{start:state.start,end:state.end,onChange:range=>{Object.assign(state,range);update();}});
     selectRoad(state.roadId,false);
@@ -306,7 +338,6 @@ async function init(){
     $('road-form').addEventListener('submit',event=>{event.preventDefault();if(compactLayout()){document.body.classList.add('panel-collapsed');$('sidebar').inert=true;$('panel-toggle').setAttribute('aria-expanded','false');$('panel-toggle').setAttribute('aria-label','Mostrar panel');$('panel-toggle').focus();}fitRoad();});
     $('panel-toggle').addEventListener('click',()=>{const collapsed=document.body.classList.toggle('panel-collapsed');$('sidebar').inert=collapsed;$('panel-toggle').setAttribute('aria-expanded',String(!collapsed));$('panel-toggle').setAttribute('aria-label',collapsed?'Mostrar panel':'Ocultar panel');setTimeout(()=>{map.resize();scheduleDraw();},260);});
     $('close-panel').addEventListener('click',()=>{document.body.classList.add('panel-collapsed');$('sidebar').inert=true;$('panel-toggle').setAttribute('aria-expanded','false');$('panel-toggle').setAttribute('aria-label','Mostrar panel');$('panel-toggle').focus();});
-    $('view-toggle').addEventListener('click',()=>{const tilt=map.getPitch()<10;$('view-toggle').setAttribute('aria-pressed',String(tilt));$('view-toggle').setAttribute('aria-label',tilt?'Volver a vista plana':'Inclinar el mapa');map.easeTo({pitch:tilt?48:0,duration:reduceMotion?0:800});});
     $('reset-hours').addEventListener('click',resetHours);$('empty-reset').addEventListener('click',resetHours);
     $('open-sources').addEventListener('click',()=>$('sources-dialog').showModal());
     $('hour-method').addEventListener('click',()=>{$('sources-dialog').showModal();$('hour-explanation').scrollIntoView({block:'start'});});

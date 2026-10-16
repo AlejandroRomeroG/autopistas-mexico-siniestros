@@ -127,190 +127,235 @@ function parallelDuplicate(a, b) {
     distance(a.points[0], b.points[0]) + distance(a.points.at(-1), b.points.at(-1)),
     distance(a.points[0], b.points.at(-1)) + distance(a.points.at(-1), b.points[0]),
   );
-  if (endDistance > 1200) return false;
+  // Both carriageways can have unequal approach tails. Their shared corridor is
+  // established by the full-route samples below, not identical endpoints.
+  if (endDistance > 2500) return false;
   const gaps = [];
   for (let index = 0; index <= 12; index++) gaps.push(nearest(atDistance(b.points, b.lengths, b.length * index / 12), a.points, a.lengths).distance);
   gaps.sort((x, y) => x - y);
   return gaps[6] < 150 && gaps[11] < 350;
 }
 
+const lonLat = point => [point.x / (radians * EARTH), (2 * Math.atan(Math.exp(point.y / EARTH)) - Math.PI / 2) / radians];
+const unit = (x, y, fallback = { x: 1, y: 0 }) => { const length = Math.hypot(x, y); return length > 1e-9 ? { x: x / length, y: y / length } : { ...fallback }; };
+const projectedPoint = (project, coordinate) => { const point = project(coordinate); return Array.isArray(point) ? { x: point[0], y: point[1] } : { x: point.x, y: point.y }; };
+
+function average(values, radius) {
+  return values.map((value, index) => {
+    const span = Math.min(radius, index, values.length - index - 1);
+    if (!span) return { ...value };
+    let x = 0, y = 0, weight = 0;
+    for (let other = index - span; other <= index + span; other++) {
+      const amount = span + 1 - Math.abs(other - index);
+      x += values[other].x * amount; y += values[other].y * amount; weight += amount;
+    }
+    return { x: x / weight, y: y / weight };
+  });
+}
+
+function sideOfCurve(points) {
+  // The route orientation is canonical, so its outside never changes when the
+  // camera moves. Use signed turning, rather than which side fits the viewport.
+  let turning = 0;
+  for (let index = 1; index < points.length - 1; index++) {
+    const before = unit(points[index].x - points[index - 1].x, points[index].y - points[index - 1].y);
+    const after = unit(points[index + 1].x - points[index].x, points[index + 1].y - points[index].y);
+    turning += Math.atan2(before.x * after.y - before.y * after.x, before.x * after.x + before.y * after.y);
+  }
+  return turning > 1e-5 ? -1 : 1;
+}
+
+function makeSpine(path) {
+  const metreScale = 1 / Math.cos(path.coordinates.reduce((sum, point) => sum + point[1], 0) / path.coordinates.length * radians);
+  const groundLength = path.length / metreScale;
+  const count = Math.max(2, Math.ceil(groundLength / 1500));
+  const step = path.length / count;
+  const positions = Array.from({ length: count + 1 }, (_, index) => index * step);
+  const original = positions.map(position => atDistance(path.points, path.lengths, position));
+  // Smooth in road metres, before projection. Two broad weighted passes remove
+  // hairpins without a pixel tolerance changing the geometry as the map zooms.
+  // Symmetric windows taper at the ends, keeping the exact surveyed endpoints.
+  const radius = Math.max(1, Math.round(Math.min(45000, Math.max(18000, groundLength * .35)) * metreScale / step));
+  const points = average(average(original, radius), radius);
+  const tangentRadius = Math.max(1, Math.round(8000 * metreScale / step));
+  const directions = points.map((point, index) => {
+    const before = points[Math.max(0, index - tangentRadius)], after = points[Math.min(points.length - 1, index + tangentRadius)];
+    return unit(after.x - before.x, after.y - before.y);
+  });
+  const normalRadius = Math.max(1, Math.round(Math.min(30000, groundLength * .25) * metreScale / step));
+  const side = sideOfCurve(points);
+  const tangents = average(directions, normalRadius).map(direction => unit(direction.x, direction.y));
+  const normals = tangents.map(tangent => ({ x: -tangent.y * side, y: tangent.x * side }));
+  return { positions, original, points, normals, metreScale, step, side };
+}
+
+function kmDirection(anchors) {
+  let vote = 0;
+  for (let first = 0; first < anchors.length; first++) for (let second = first + 1; second < anchors.length; second++) {
+    const a = anchors[first], b = anchors[second];
+    if (!Number.isFinite(a.km) || !Number.isFinite(b.km)) continue;
+    const kmDelta = b.km - a.km, positionDelta = (b.position - a.position) / 1000;
+    // Distant changes of kilometre origin are not a route calibration. Nearby
+    // consistent pairs only establish which direction increasing km runs in.
+    if (Math.abs(kmDelta) < .1 || Math.abs(positionDelta) < .1 || Math.abs(kmDelta) > Math.abs(positionDelta) * 3 + 5) continue;
+    vote += Math.sign(kmDelta * positionDelta) * Math.min(20, Math.abs(positionDelta));
+  }
+  return vote < 0 ? -1 : 1;
+}
+
 export function buildChartGuide(parts, anchors) {
   const reference = (anchors || []).filter(anchor => validCoordinate(anchor.coordinate)).map(anchor => ({ ...anchor, coordinate: [...anchor.coordinate] }));
   const paths = [];
   for (const path of pathsFromRoad(parts)) if (!paths.some(existing => parallelDuplicate(existing, path))) paths.push(path);
-  const runs = paths.map(path => ({ coordinates: path.coordinates, anchors: [] }));
+  const runs = paths.map(path => ({ ...path, anchors: [] }));
   for (const anchor of reference) {
     const point = xy(anchor.coordinate);
-    let choice = -1, delta = Infinity;
-    paths.forEach((path, index) => { const candidate = nearest(point, path.points, path.lengths).distance; if (candidate < delta) { delta = candidate; choice = index; } });
-    // A branch absent from the dominant path receives its own local axis instead
-    // of being dragged kilometres onto the main carriageway.
-    if (choice >= 0 && delta <= 650) runs[choice].anchors.push(anchor);
+    let choice = -1, best = null;
+    paths.forEach((path, index) => { const candidate = nearest(point, path.points, path.lengths); if (!best || candidate.distance < best.distance) { best = candidate; choice = index; } });
+    if (choice >= 0 && best.distance <= 650) runs[choice].anchors.push({ ...anchor, position: best.position });
     else {
+      // Keep genuinely separate source branches separate. Never bridge a gap by
+      // joining records in kilometre order or move a point onto a remote route.
       const a = validCoordinate(anchor.a) ? anchor.a : [anchor.coordinate[0] - .001, anchor.coordinate[1]];
-      const b = validCoordinate(anchor.b) ? anchor.b : [anchor.coordinate[0] + .001, anchor.coordinate[1]];
+      let b = validCoordinate(anchor.b) ? anchor.b : [anchor.coordinate[0] + .001, anchor.coordinate[1]];
+      if (distance(xy(a), xy(b)) < 1) b = [a[0] + .002, a[1]];
       const coordinates = a[0] < b[0] || a[0] === b[0] && a[1] < b[1] ? [a, b] : [b, a];
-      runs.push({ coordinates, anchors: [anchor] });
+      const points = coordinates.map(xy), lengths = cumulative(points);
+      runs.push({ coordinates, points, lengths, length: lengths.at(-1), anchors: [{ ...anchor, position: nearest(point, points, lengths).position }], local: true });
     }
   }
-  return { runs: runs.filter(run => run.anchors.length), referenceMaximum: Math.max(1, ...reference.map(anchor => Number.isFinite(anchor.count) ? anchor.count : 1)) };
+  return {
+    runs: runs.filter(run => run.anchors.length).map(run => ({ ...run, spine: makeSpine(run), kmDirection: kmDirection(run.anchors) })),
+    referenceMaximum: Math.max(1, ...reference.map(anchor => Number.isFinite(anchor.count) ? anchor.count : 1)),
+  };
 }
 
-function simplify(points, tolerance) {
-  if (points.length < 3) return points;
-  const keep = new Set([0, points.length - 1]), stack = [[0, points.length - 1]];
-  while (stack.length) {
-    const [first, last] = stack.pop(); let furthest = -1, largest = tolerance;
-    const segment = [points[first], points[last]], lengths = cumulative(segment);
-    for (let index = first + 1; index < last; index++) { const delta = nearest(points[index], segment, lengths).distance; if (delta > largest) { largest = delta; furthest = index; } }
-    if (furthest >= 0) { keep.add(furthest); stack.push([first, furthest], [furthest, last]); }
-  }
-  return [...keep].sort((a, b) => a - b).map(index => points[index]);
+function interpolate(values, positions, position) {
+  return atDistance(values, positions, position);
 }
 
-function regularize(points, maxHeight) {
-  let result = simplify(points, 22);
-  for (let iteration = 0; iteration < 3 && result.length > 2; iteration++) {
-    const rounded = [result[0]];
-    for (let index = 1; index < result.length; index++) {
-      const a = result[index - 1], b = result[index];
-      rounded.push({ x: a.x * .75 + b.x * .25, y: a.y * .75 + b.y * .25 }, { x: a.x * .25 + b.x * .75, y: a.y * .25 + b.y * .75 });
-    }
-    rounded.push(result.at(-1)); result = rounded;
-  }
-  const lengths = cumulative(result), total = lengths.at(-1);
-  if (total < .001) return result;
-  const step = Math.max(5, total / 1600), sampled = [];
-  for (let position = 0; position < total; position += step) sampled.push(atDistance(result, lengths, position));
-  sampled.push(result.at(-1));
-  const radius = Math.max(1, Math.round(Math.min(65, Math.max(12, maxHeight * .45)) / step));
-  return sampled.map((point, index) => {
-    if (!index || index === sampled.length - 1) return point;
-    let x = 0, y = 0, weightSum = 0;
-    for (let offset = -radius; offset <= radius; offset++) {
-      const source = sampled[clamp(index + offset, 0, sampled.length - 1)], weight = radius + 1 - Math.abs(offset);
-      x += source.x * weight; y += source.y * weight; weightSum += weight;
-    }
-    return { x: x / weightSum, y: y / weightSum };
+function projectedSpine(run, project, clearance) {
+  const { spine } = run;
+  const base = spine.points.map(point => projectedPoint(project, lonLat(point)));
+  const normals = spine.points.map((point, index) => {
+    const delta = spine.normals[index], nearby = projectedPoint(project, lonLat({ x: point.x + delta.x * 100, y: point.y + delta.y * 100 }));
+    return unit(nearby.x - base[index].x, nearby.y - base[index].y, { x: 0, y: -1 });
   });
-}
-
-function hasCollision(entries, height, referenceMaximum) {
-    // Analytic separating axes avoid allocating four polygons for every pair on
-    // every animation frame. The tolerance allows a subpixel shared border.
-    const shapes = entries.map(bar => {
-      const halfHeight = height * bar.count / referenceMaximum / 2, halfWidth = bar.width / 2;
-      return { bar, halfHeight, halfWidth, x: bar.point.x + bar.normal.x * halfHeight, y: bar.point.y + bar.normal.y * halfHeight, extentX: Math.abs(bar.tangent.x) * halfWidth + Math.abs(bar.normal.x) * halfHeight, extentY: Math.abs(bar.tangent.y) * halfWidth + Math.abs(bar.normal.y) * halfHeight };
-    });
-    for (let a = 0; a < shapes.length; a++) for (let b = a + 1; b < shapes.length; b++) {
-      const first = shapes[a], second = shapes[b], dx = second.x - first.x, dy = second.y - first.y;
-      if (first.halfHeight < .04 || second.halfHeight < .04 || Math.abs(dx) >= first.extentX + second.extentX - .08 || Math.abs(dy) >= first.extentY + second.extentY - .08) continue;
-      let separated = false;
-      for (const axis of [first.bar.tangent, first.bar.normal, second.bar.tangent, second.bar.normal]) {
-        const extent = Math.abs(axis.x * first.bar.tangent.x + axis.y * first.bar.tangent.y) * first.halfWidth + Math.abs(axis.x * first.bar.normal.x + axis.y * first.bar.normal.y) * first.halfHeight + Math.abs(axis.x * second.bar.tangent.x + axis.y * second.bar.tangent.y) * second.halfWidth + Math.abs(axis.x * second.bar.normal.x + axis.y * second.bar.normal.y) * second.halfHeight;
-        if (Math.abs(dx * axis.x + dy * axis.y) >= extent - .08) { separated = true; break; }
-      }
-      if (!separated) return true;
+  const surveyed = run.points.map(point => projectedPoint(project, lonLat(point)));
+  const envelopeRadius = Math.max(1, Math.round(4500 * spine.metreScale / spine.step));
+  let firstVertex = 0;
+  const reaches = base.map((point, index) => {
+    const from = spine.positions[Math.max(0, index - envelopeRadius)], to = spine.positions[Math.min(base.length - 1, index + envelopeRadius)];
+    while (firstVertex < run.lengths.length - 1 && run.lengths[firstVertex] < from) firstVertex++;
+    let reach = 0;
+    for (let vertex = firstVertex; vertex < surveyed.length && run.lengths[vertex] <= to; vertex++) {
+      reach = Math.max(reach, (surveyed[vertex].x - point.x) * normals[index].x + (surveyed[vertex].y - point.y) * normals[index].y);
     }
-  return false;
+    return Math.max(clearance, reach + clearance);
+  });
+  // Dilate first, then average a smaller window. This rounds the envelope while
+  // retaining clearance at the sharpest excursion, rather than clipping through
+  // the road after an ordinary smoothing pass.
+  const dilation = Math.max(1, Math.round(7000 * spine.metreScale / spine.step));
+  const rounding = Math.max(1, Math.floor(dilation * .6));
+  const broad = reaches.map((reach, index) => Math.max(...reaches.slice(Math.max(0, index - dilation), Math.min(reaches.length, index + dilation + 1))));
+  const gaps = broad.map((gap, index) => {
+    const slice = broad.slice(Math.max(0, index - rounding), Math.min(broad.length, index + rounding + 1));
+    return slice.reduce((sum, value) => sum + value, 0) / slice.length;
+  });
+  return { points: base.map((point, index) => ({ x: point.x + normals[index].x * gaps[index], y: point.y + normals[index].y * gaps[index] })), normals };
 }
 
-function safeHeight(bars, maximum, referenceMaximum) {
+function median(values) { const sorted = [...values].sort((a, b) => a - b); return sorted.length ? sorted[Math.floor(sorted.length / 2)] : 5000; }
+
+function barAt(run, position, frame) {
+  const point = interpolate(frame.points, run.spine.positions, position);
+  const normalValue = interpolate(frame.normals, run.spine.positions, position), normal = unit(normalValue.x, normalValue.y, { x: 0, y: -1 });
+  const before = interpolate(frame.points, run.spine.positions, position - run.spine.step), after = interpolate(frame.points, run.spine.positions, position + run.spine.step);
+  let tangent = unit(after.x - before.x, after.y - before.y);
+  // Match orientation of the route, keeping the normal perpendicular even where
+  // the adaptive envelope gently swells away from the original spine.
+  const perpendicular = { x: -normal.y, y: normal.x };
+  tangent = tangent.x * perpendicular.x + tangent.y * perpendicular.y < 0 ? { x: -perpendicular.x, y: -perpendicular.y } : perpendicular;
+  return { point, normal, tangent };
+}
+
+function shape(bar, height) {
+  const start = bar.baseStart, end = bar.baseEnd;
+  return [start, end, { x: end.x + bar.normal.x * height, y: end.y + bar.normal.y * height }, { x: start.x + bar.normal.x * height, y: start.y + bar.normal.y * height }];
+}
+
+function overlap(a, b) {
+  for (const polygon of [a, b]) for (let index = 0; index < 4; index++) {
+    const first = polygon[index], second = polygon[(index + 1) % 4], axis = unit(second.y - first.y, first.x - second.x);
+    const aa = a.map(point => point.x * axis.x + point.y * axis.y), bb = b.map(point => point.x * axis.x + point.y * axis.y);
+    if (Math.min(Math.max(...aa), Math.max(...bb)) - Math.max(Math.min(...aa), Math.min(...bb)) < .1) return false;
+  }
+  return true;
+}
+
+function heightLimit(bars, requested, referenceMaximum) {
   const entries = [...bars.values()];
-  if (!hasCollision(entries, maximum, referenceMaximum)) return maximum;
-  let low = 0, high = maximum;
-  for (let iteration = 0; iteration < 15; iteration++) { const middle = (low + high) / 2; if (hasCollision(entries, middle, referenceMaximum)) high = middle; else low = middle; }
+  const collision = height => {
+    const shapes = entries.map(bar => shape(bar, height * bar.count / referenceMaximum));
+    for (let first = 0; first < shapes.length; first++) for (let second = first + 1; second < shapes.length; second++) if (overlap(shapes[first], shapes[second])) return true;
+    return false;
+  };
+  if (!collision(requested)) return requested;
+  let low = 0, high = requested;
+  for (let iteration = 0; iteration < 12; iteration++) { const middle = (low + high) / 2; if (collision(middle)) high = middle; else low = middle; }
   return low * .98;
 }
 
-function placeRuns(groups, referenceMaximum, requestedHeight, options) {
-  const bars = new Map(), runs = [], placed = [];
-  // A narrow curve can limit a run's own height. Separate components can instead
-  // move as whole graphic axes, preserving every individual count proportion.
-  const target = Math.min(requestedHeight, ...groups.map(group => Math.max(...group.alternatives.map(alternative => alternative.safeHeight))));
-  for (const group of groups) {
-    const alternatives = group.alternatives.filter(alternative => alternative.safeHeight >= target - .01);
-    const candidates = [];
-    for (const alternative of alternatives) {
-      const values = [...alternative.bars.values()];
-      let nx = values.reduce((sum, bar) => sum + bar.normal.x, 0), ny = values.reduce((sum, bar) => sum + bar.normal.y, 0), norm = Math.hypot(nx, ny);
-      if (norm < .01) { nx = values[0].normal.x; ny = values[0].normal.y; norm = 1; }
-      nx /= norm; ny /= norm;
-      const directions = [[nx, ny], [-nx, -ny], [ny, -nx], [-ny, nx], [1, 0], [-1, 0], [0, 1], [0, -1], [Math.SQRT1_2, Math.SQRT1_2], [-Math.SQRT1_2, Math.SQRT1_2], [Math.SQRT1_2, -Math.SQRT1_2], [-Math.SQRT1_2, -Math.SQRT1_2]];
-      for (const radius of [0, 10, 20, 32, 48, 64, 88, 120]) {
-        for (const [dx, dy] of radius ? directions : [[0, 0]]) {
-          const x = dx * radius, y = dy * radius;
-          let offCanvas = 0;
-          if (options.width && options.height) for (const bar of values) {
-            const centreX = bar.point.x + x + bar.normal.x * target * bar.count / referenceMaximum / 2, centreY = bar.point.y + y + bar.normal.y * target * bar.count / referenceMaximum / 2;
-            offCanvas += Math.max(0, -centreX, centreX - options.width, -centreY, centreY - options.height);
-          }
-          candidates.push({ alternative, x, y, cost: radius + (alternative === group.preferred ? 0 : 2) + offCanvas * .3 });
-        }
-      }
-    }
-    candidates.sort((a, b) => a.cost - b.cost);
-    let choice = null, translated = null;
-    for (const candidate of candidates) {
-      const moved = [...candidate.alternative.bars].map(([id, bar]) => [id, { ...bar, point: { x: bar.point.x + candidate.x, y: bar.point.y + candidate.y } }]);
-      if (!hasCollision([...placed, ...moved.map(([, bar]) => bar)], target, referenceMaximum)) { choice = candidate; translated = moved; break; }
-    }
-    // Bounded packing is deliberately conservative. An unresolved extreme case
-    // falls back to the common height guard; it never clips a single bar.
-    if (!choice) {
-      choice = candidates[0];
-      translated = [...choice.alternative.bars].map(([id, bar]) => [id, { ...bar, point: { x: bar.point.x + choice.x, y: bar.point.y + choice.y } }]);
-    }
-    for (const [id, bar] of translated) { bars.set(id, bar); placed.push(bar); }
-    runs.push(choice.alternative.points.map(point => ({ x: point.x + choice.x, y: point.y + choice.y })));
-  }
-  return { bars, runs, maxHeight: safeHeight(bars, target, referenceMaximum) };
-}
-
 export function projectChartGuide(guide, project, options = {}) {
-  const requestedHeight = Math.max(0, options.maxHeight ?? 140), maxWidth = Math.max(.5, options.maxWidth ?? 32), minWidth = clamp(options.minWidth ?? 2, .5, maxWidth);
-  const offset = Math.max(0, options.offset ?? 10);
-  const groups = [];
-  for (const referenceRun of guide?.runs || []) {
-    const projected = referenceRun.coordinates.map(coordinate => project(coordinate)).map(point => Array.isArray(point) ? { x: point[0], y: point[1] } : { x: point.x, y: point.y }).filter(point => Number.isFinite(point.x) && Number.isFinite(point.y));
-    if (projected.length < 2) continue;
-    let points = regularize(projected, requestedHeight), lengths = cumulative(points), total = lengths.at(-1);
-    const spacing = minWidth + 1.2, required = Math.max(10, referenceRun.anchors.length * spacing);
-    if (total < required) {
-      const middle = points[Math.floor(points.length / 2)], first = points[0], last = points.at(-1), length = distance(first, last) || 1;
-      const tangent = distance(first, last) < .001 ? { x: 1, y: 0 } : { x: (last.x - first.x) / length, y: (last.y - first.y) / length };
-      points = [{ x: middle.x - tangent.x * required / 2, y: middle.y - tangent.y * required / 2 }, { x: middle.x + tangent.x * required / 2, y: middle.y + tangent.y * required / 2 }];
-      lengths = cumulative(points); total = lengths.at(-1);
-    }
-    const positions = referenceRun.anchors.map(anchor => {
-      const projectedAnchor = project(anchor.coordinate), point = Array.isArray(projectedAnchor) ? { x: projectedAnchor[0], y: projectedAnchor[1] } : projectedAnchor;
-      return { anchor, position: nearest(point, points, lengths).position };
-    }).sort((a, b) => a.position - b.position || String(a.anchor.id).localeCompare(String(b.anchor.id)));
-    // Give coincident reference bins separate slots on the same graphic axis.
-    for (let index = 1; index < positions.length; index++) positions[index].position = Math.max(positions[index].position, positions[index - 1].position + spacing);
-    if (positions.length && positions.at(-1).position > total) positions.at(-1).position = total;
-    for (let index = positions.length - 2; index >= 0; index--) positions[index].position = Math.min(positions[index].position, positions[index + 1].position - spacing);
-    const runBars = new Map();
-    for (let index = 0; index < positions.length; index++) {
-      const { anchor, position } = positions[index], point = atDistance(points, lengths, position), window = Math.min(total / 3, Math.max(16, requestedHeight * .65));
-      const before = atDistance(points, lengths, position - window), after = atDistance(points, lengths, position + window), length = distance(before, after) || 1;
-      const tangent = { x: (after.x - before.x) / length, y: (after.y - before.y) / length };
-      if (Math.hypot(tangent.x, tangent.y) < .001) { tangent.x = 1; tangent.y = 0; }
-      const gaps = [positions[index - 1], positions[index + 1]].filter(Boolean).map(other => distance(point, atDistance(points, lengths, other.position)));
-      const width = clamp(gaps.length ? Math.min(...gaps) * .68 : maxWidth, minWidth, maxWidth);
-      runBars.set(anchor.id, { point, tangent, normal: { x: tangent.y, y: -tangent.x }, width, count: Math.max(0, Number.isFinite(anchor.count) ? anchor.count : 1) });
-    }
-    const withSide = sign => new Map([...runBars].map(([id, bar]) => [id, { ...bar, normal: { x: bar.normal.x * sign, y: bar.normal.y * sign }, point: { x: bar.point.x + bar.normal.x * sign * offset, y: bar.point.y + bar.normal.y * sign * offset } }]));
-    const left = withSide(1), right = withSide(-1);
-    const window = Math.min(total / 3, Math.max(16, requestedHeight * .65));
-    const offsetPoints = sign => points.map((point, index) => {
-      const before = atDistance(points, lengths, lengths[index] - window), after = atDistance(points, lengths, lengths[index] + window), length = distance(before, after) || 1;
-      return { x: point.x + (after.y - before.y) / length * offset * sign, y: point.y - (after.x - before.x) / length * offset * sign };
+  const bars = new Map(), runs = [];
+  const requested = Math.max(0, options.maxHeight ?? 140), minWidth = Math.max(.5, options.minWidth ?? 2), maxWidth = Math.max(minWidth, options.maxWidth ?? 32);
+  for (const run of guide?.runs || []) {
+    const frame = projectedSpine(run, project, Math.max(12, options.clearance ?? 16));
+    if (frame.points.some(point => !Number.isFinite(point.x) || !Number.isFinite(point.y))) continue;
+    const ordered = [...run.anchors].sort((a, b) => a.position - b.position || String(a.id).localeCompare(String(b.id)));
+    const intervals = ordered.map((anchor, index) => {
+      const neighbours = [ordered[index - 1], ordered[index + 1]].filter(Boolean).map(other => Math.abs(other.position - anchor.position)).filter(value => value > 1);
+      const nominal = Number.isFinite(anchor.from) && Number.isFinite(anchor.to) ? (anchor.to - anchor.from) * 1000 * run.spine.metreScale : options.binKm > 0 ? options.binKm * 1000 * run.spine.metreScale : median(neighbours);
+      const shift = Number.isFinite(anchor.km) && Number.isFinite(anchor.from) && Number.isFinite(anchor.to) ? ((anchor.from + anchor.to) / 2 - anchor.km) * 1000 * run.spine.metreScale * run.kmDirection : 0;
+      return { anchor, center: clamp(anchor.position + shift, 0, run.length), nominal: Math.max(1, nominal) };
     });
-    const alternatives = [{ bars: left, points: offsetPoints(1), safeHeight: safeHeight(left, requestedHeight, guide.referenceMaximum) }, { bars: right, points: offsetPoints(-1), safeHeight: safeHeight(right, requestedHeight, guide.referenceMaximum) }];
-    groups.push({ alternatives, preferred: alternatives[0].safeHeight >= alternatives[1].safeHeight ? alternatives[0] : alternatives[1] });
+    // Co-located observations may use incompatible kilometre origins. Give their
+    // separate bins adjacent slots on this same axis, rather than inventing tiny
+    // crossing axes. Source coordinates remain untouched.
+    for (let index = 0; index < intervals.length;) {
+      let end = index + 1;
+      while (end < intervals.length && intervals[end].center - intervals[index].center < Math.min(intervals[index].nominal, intervals[end].nominal) * .15) end++;
+      if (end - index > 1) {
+        const members = intervals.slice(index, end).sort((a, b) => Number.isFinite(a.anchor.km) && Number.isFinite(b.anchor.km) ? (a.anchor.km - b.anchor.km) * run.kmDirection : String(a.anchor.id).localeCompare(String(b.anchor.id)));
+        const span = Math.min(run.length / Math.max(1, intervals.length), median(members.map(member => member.nominal)));
+        const center = members.reduce((sum, member) => sum + member.center, 0) / members.length;
+        members.forEach((member, memberIndex) => { member.center = clamp(center + (memberIndex - (members.length - 1) / 2) * span, 0, run.length); });
+      }
+      index = end;
+    }
+    intervals.sort((a, b) => a.center - b.center || String(a.anchor.id).localeCompare(String(b.anchor.id)));
+    runs.push(frame.points.map((point, index) => ({ ...point, normal: frame.normals[index] })));
+    for (let index = 0; index < intervals.length; index++) {
+      const { anchor, center, nominal } = intervals[index], previous = intervals[index - 1], next = intervals[index + 1];
+      const left = Math.max(0, center - nominal / 2, previous ? (previous.center + center) / 2 : -Infinity);
+      const right = Math.min(run.length, center + nominal / 2, next ? (next.center + center) / 2 : Infinity);
+      const margin = (right - left) * .1;
+      const start = barAt(run, left + margin, frame), end = barAt(run, right - margin, frame), centre = barAt(run, (left + right) / 2, frame);
+      let width = distance(start.point, end.point), baseStart = start.point, baseEnd = end.point;
+      // minWidth is a readability preference, never permission to overrun a
+      // narrow route slot. A 1 km interval on a long road may be subpixel at the
+      // overview; widening it to 2 px made adjacent bars overlap at their bases
+      // and forced the entire count scale almost to zero.
+      if (width < .001) {
+        const gaps = [previous, next].filter(Boolean).map(other => distance(centre.point, barAt(run, other.center, frame).point));
+        width = Math.min(minWidth, gaps.length ? Math.min(...gaps) * .4 : .5);
+        width = Math.max(.001, width);
+        baseStart = { x: centre.point.x - centre.tangent.x * width / 2, y: centre.point.y - centre.tangent.y * width / 2 };
+        baseEnd = { x: centre.point.x + centre.tangent.x * width / 2, y: centre.point.y + centre.tangent.y * width / 2 };
+      }
+      bars.set(anchor.id, { ...centre, baseStart, baseEnd, width: Math.min(width, maxWidth), count: Math.max(0, Number.isFinite(anchor.count) ? anchor.count : 1), position: center });
+    }
   }
-  // The limit uses every original bin and its reference count. Filtering can only
-  // shorten these rectangles, preserving both layout and a common count scale.
-  return placeRuns(groups, guide?.referenceMaximum || 1, requestedHeight, options);
+  return { runs, bars, maxHeight: heightLimit(bars, requested, guide?.referenceMaximum || 1) };
 }
