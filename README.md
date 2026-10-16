@@ -1,6 +1,6 @@
 # Siniestros en autopistas de México
 
-Piloto estático para explorar registros reales de siniestros de la red de cuota. Inspirado en la composición de [Tingkart / Norway Charts](https://norway-charts.netlify.app/road_accident_map/public/); interfaz y lógica implementadas para este proyecto.
+Piloto estático para explorar registros reales de siniestros de la red de cuota, con la identidad visual de [Alejandro Romero González](https://alejandroromerog.github.io/) y temas claro y oscuro. La idea de explorar conteos por tramo y horario parte de [Tingkart / Norway Charts](https://norway-charts.netlify.app/road_accident_map/public/); la interfaz y la lógica se implementaron para este proyecto.
 
 **[Abrir el mapa](https://alejandroromerog.github.io/autopistas-mexico-siniestros/)**
 
@@ -78,4 +78,15 @@ GitHub Pages se configura desde `main`, carpeta `/docs`. `npm run build` genera 
 - Accidentes y geometría: SICT / Instituto Mexicano del Transporte, GeoPlataforma y servicios públicos GeoSSI. Se conservan atribución, procedencia y datos originales; su disponibilidad pública no implica que este repositorio cambie los términos de la fuente.
 - Fondo: Esri y los contribuidores indicados en la atribución visible del mapa, incluidos OpenStreetMap.
 - MapLibre GL JS: BSD 3-Clause, licencia incluida en `src/vendor/MAPLIBRE-LICENSE.txt`.
+- Inter Tight: SIL Open Font License 1.1, fuente y licencia incluidas en `src/vendor/`.
 - Código propio del piloto: MIT. Las licencias del código no se aplican a los datos ni a los recursos de terceros.
+
+## Identidad visual y temas
+
+La composición actual toma la identidad del [sitio personal de Alejandro Romero González](https://alejandroromerog.github.io/), con referencias de TesisCIDE y Movilidad Integrada CDMX. Ofrece tema claro (crema/arena, acento lila profundo) y oscuro (carbón verdoso, texto crema, lila suave). La elección se guarda sólo para este proyecto; la primera visita sigue la preferencia del sistema. El fondo cartográfico cambia junto con la interfaz.
+
+## Búsqueda de históricos adicionales
+
+Se revisaron fuentes el 16 de octubre de 2026. La investigación no recuperó nuevos microdatos federales de autopistas con ubicación y hora que puedan incorporarse sin cambiar la población del piloto. El [registro de búsqueda](src/data/history-search.json) documenta fuentes, limitaciones y el extracto anonimizado que haría falta obtener.
+
+El catálogo global del IMT sólo expone las dos semanas existentes y un alias. Los 15 recursos CAPUFE revisados son agregados. El histórico de Policía Federal tiene metadatos de 2015–2018 y evidencia académica de uso hasta 2019, pero su enlace original está caído y no se recuperó una copia utilizable. Siniestralimap Jalisco sí contiene datos de 2015–2025, pero son siniestros con víctimas en municipios metropolitanos, con ubicaciones por cruce y sin jurisdicción completa; se conserva como referencia para un alcance regional separado. No se añadieron personas como accidentes ni se generaron ubicaciones a partir de totales.

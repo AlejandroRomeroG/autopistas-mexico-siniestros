@@ -1,4 +1,5 @@
 import { TimeDial } from './time-dial.js';
+import { THEME_STORAGE_KEY, resolveTheme, themeColors, basemapTiles } from './theme.mjs';
 import { filterRecords, groupBins, hourLabel, approximateTime, shortDate, escapeHtml as esc, csvEncode, nearestOnLines, colorForCount, numberFormat as nf } from './core.mjs';
 
 const $ = id => document.getElementById(id);
@@ -9,6 +10,33 @@ const canvas = $('density-overlay');
 const ctx = canvas.getContext('2d');
 const tooltip = $('map-tooltip');
 const pageSize = 15;
+
+function currentTheme(){return document.documentElement.dataset.theme==='dark'?'dark':'light';}
+function updateMapTheme(){
+  if(!map)return;
+  const colors=themeColors(currentTheme());
+  map.getSource('basemap')?.setTiles(basemapTiles(currentTheme()));
+  map.getSource('basemap-labels')?.setTiles(basemapTiles(currentTheme(),true));
+  for(const layer of ['selected-road','accident-points']) if(map.getLayer(layer)) map.setPaintProperty(layer,layer==='selected-road'?'line-color':'circle-color',colors.accent);
+  if(map.getLayer('road-halo'))map.setPaintProperty('road-halo','line-color',colors.halo);
+  if(map.getLayer('all-roads'))map.setPaintProperty('all-roads','line-color',colors.context);
+  if(map.getLayer('accident-points'))map.setPaintProperty('accident-points','circle-stroke-color',colors.halo);
+  scheduleDraw();
+}
+function initializeTheme(){
+  const system=matchMedia('(prefers-color-scheme: dark)');
+  let preference;try{preference=localStorage.getItem(THEME_STORAGE_KEY);}catch{}
+  const apply=theme=>{
+    document.documentElement.dataset.theme=theme;
+    const button=$('theme-toggle');
+    if(button){button.setAttribute('aria-pressed',String(theme==='dark'));button.setAttribute('aria-label',`Cambiar a tema ${theme==='dark'?'claro':'oscuro'}`);button.title=button.getAttribute('aria-label');}
+    if($('theme-label'))$('theme-label').textContent=theme==='dark'?'Oscuro':'Claro';
+    updateMapTheme();
+  };
+  apply(resolveTheme(preference,system.matches));
+  $('theme-toggle')?.addEventListener('click',()=>{preference=currentTheme()==='dark'?'light':'dark';try{localStorage.setItem(THEME_STORAGE_KEY,preference);}catch{}apply(preference);});
+  system.addEventListener('change',event=>{if(preference!=='dark'&&preference!=='light')apply(resolveTheme(null,event.matches));});
+}
 
 async function loadJson(path) {
   const response = await fetch(path);
@@ -123,7 +151,11 @@ function fitRoad() {
   if (!bounds) {map.fitBounds([[-117.5,14.7],[-86.7,32.7]],{padding:50,duration:reduceMotion?0:1100});return;}
   const narrow=innerWidth<=760;
   const h=canvas.clientHeight,w=canvas.clientWidth;
-  const padding=narrow?{top:Math.min(175,h*.25),bottom:Math.min(225,h*.32),left:Math.min(40,w*.12),right:Math.min(40,w*.12)}:{top:Math.min(80,h*.15),bottom:Math.min(170,h*.27),left:Math.min(95,w*.15),right:Math.min(225,w*.30)};
+  const mapRect=$('map').getBoundingClientRect(),filterRect=$('sidebar').getBoundingClientRect(),dockRect=document.querySelector('.exploration-dock')?.getBoundingClientRect();
+  const topCover=document.body.classList.contains('panel-collapsed')?55:Math.max(55,filterRect.bottom-mapRect.top+18);
+  const bottomCover=dockRect?Math.max(40,mapRect.bottom-dockRect.top+22):50;
+  const maxCoveredHeight=h*.65,coverageScale=Math.min(1,maxCoveredHeight/(topCover+bottomCover));
+  const padding={top:topCover*coverageScale,bottom:bottomCover*coverageScale,left:narrow?Math.min(30,w*.1):Math.min(70,w*.1),right:narrow?Math.min(30,w*.1):Math.min(230,w*.2)};
   map.fitBounds(bounds,{padding,maxZoom:12.3,duration:reduceMotion?0:1150,essential:false});
 }
 
@@ -150,7 +182,7 @@ function drawBars() {
   const width=canvas.clientWidth,height=canvas.clientHeight,dpr=Math.min(devicePixelRatio||1,2);
   if(canvas.width!==Math.round(width*dpr)||canvas.height!==Math.round(height*dpr)){canvas.width=Math.round(width*dpr);canvas.height=Math.round(height*dpr);}
   ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,width,height);barHits=[];
-  const maxHeight=Math.min(190,Math.max(100,width*.18));
+  const maxHeight=Math.min(150,Math.max(80,width*.12),height*.28);
   const allRecords=getRows({period:'all',start:0,end:24}).sort((a,b)=>a.km-b.km);
   const first=allRecords[0]?.coordinates,last=allRecords.at(-1)?.coordinates;
   const globalVector=first&&last?[last[0]-first[0],last[1]-first[1]]:[1,1];
@@ -170,10 +202,6 @@ function drawBars() {
     ctx.fillStyle=colorForCount(bin.count,scaleMax);ctx.globalAlpha=.85;ctx.fill();ctx.globalAlpha=1;ctx.strokeStyle='#ffffff9c';ctx.lineWidth=.7;ctx.stroke();
     barHits.push({bin,points});
   }
-  if(bins.length){
-    const x=width>650?width-250:width-132,y=height>550?height-75:height-55;
-    if(width>650){ctx.fillStyle='#fffefbe8';ctx.beginPath();ctx.roundRect(x-9,y-17,209,30,6);ctx.fill();ctx.fillStyle='#6c7770';ctx.font='10px -apple-system, sans-serif';ctx.fillText(`Barras: 0–${scaleMax} registros / ${state.bin} km`,x,y);}
-  }
 }
 
 function inPolygon(point,polygon){let inside=false;for(let i=0,j=polygon.length-1;i<polygon.length;j=i++){const a=polygon[i],b=polygon[j];if((a.y>point.y)!==(b.y>point.y)&&point.x<(b.x-a.x)*(point.y-a.y)/(b.y-a.y)+a.x)inside=!inside;}return inside;}
@@ -189,16 +217,18 @@ function inspectMap(event){
 }
 
 function createMap() {
-  map=new maplibregl.Map({container:'map',center:[-99.5,20.2],zoom:7.2,maxZoom:16,canvasContextAttributes:{antialias:true,preserveDrawingBuffer:true},attributionControl:true,style:{version:8,sources:{topographic:{type:'raster',tiles:['https://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}'],tileSize:256,maxzoom:19,attribution:'Tiles © Esri · Sources: Esri, HERE, Garmin, USGS, © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>'}},layers:[{id:'topographic',type:'raster',source:'topographic',paint:{'raster-saturation':-.25,'raster-opacity':.91}}]}});
+  const colors=themeColors(currentTheme());
+  map=new maplibregl.Map({container:'map',center:[-99.5,20.2],zoom:7.2,maxZoom:16,canvasContextAttributes:{antialias:true,preserveDrawingBuffer:true},attributionControl:true,style:{version:8,sources:{basemap:{type:'raster',tiles:basemapTiles(currentTheme()),tileSize:256,maxzoom:16,attribution:'Tiles © Esri · Sources: Esri, HERE, Garmin, © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>'},'basemap-labels':{type:'raster',tiles:basemapTiles(currentTheme(),true),tileSize:256,maxzoom:16}},layers:[{id:'basemap',type:'raster',source:'basemap'},{id:'basemap-labels',type:'raster',source:'basemap-labels'}]}});
   map.addControl(new maplibregl.NavigationControl({showCompass:false}),'top-right');
   map.on('load',()=>{
     map.addSource('all-roads',{type:'geojson',data:roadsGeo});
-    map.addLayer({id:'all-roads',type:'line',source:'all-roads',paint:{'line-color':'#6f846d','line-width':1,'line-opacity':.35}});
+    map.addLayer({id:'all-roads',type:'line',source:'all-roads',paint:{'line-color':themeColors(currentTheme()).context,'line-width':1,'line-opacity':.35}});
     map.addSource('selected-road',{type:'geojson',data:{type:'FeatureCollection',features:[]}});
-    map.addLayer({id:'road-halo',type:'line',source:'selected-road',paint:{'line-color':'#ffffff','line-width':6,'line-opacity':.65}});
-    map.addLayer({id:'selected-road',type:'line',source:'selected-road',paint:{'line-color':'#7d2e8d','line-width':2.6,'line-opacity':.95}});
+    map.addLayer({id:'road-halo',type:'line',source:'selected-road',paint:{'line-color':themeColors(currentTheme()).halo,'line-width':6,'line-opacity':.65}});
+    map.addLayer({id:'selected-road',type:'line',source:'selected-road',paint:{'line-color':themeColors(currentTheme()).accent,'line-width':2.6,'line-opacity':.95}});
     map.addSource('accidents',{type:'geojson',data:{type:'FeatureCollection',features:[]}});
-    map.addLayer({id:'accident-points',type:'circle',source:'accidents',paint:{'circle-color':'#743289','circle-radius':['interpolate',['linear'],['zoom'],5,2,10,3.3,14,5],'circle-stroke-width':1,'circle-stroke-color':'#ffffff','circle-opacity':.85}});
+    map.addLayer({id:'accident-points',type:'circle',source:'accidents',paint:{'circle-color':themeColors(currentTheme()).accent,'circle-radius':['interpolate',['linear'],['zoom'],5,2,10,3.3,14,5],'circle-stroke-width':1,'circle-stroke-color':themeColors(currentTheme()).halo,'circle-opacity':.85}});
+    updateMapTheme();
     selectRoad(state.roadId);
     $('loading').hidden=true;
   });
@@ -223,6 +253,7 @@ function renderSources() {
     <h3>Qué entra al mapa</h3><p>Cada conteo corresponde a un registro publicado, no a un evento único confirmado. Se conservan los posibles duplicados porque no hay una clave de evento documentada.</p><p>Se excluyen <strong>${outside}</strong> fechas fuera de la semana anunciada y <strong>${unmapped}</strong> registros del periodo sin trazo asignado o a más de 1 km del trazo oficial. Un registro ubicable tiene un kilometraje ambiguo: aparece como punto, pero no alimenta las barras. Los registros originales y las advertencias se conservan en la descarga completa. No se corrigen sus fechas ni posiciones.</p>
     <h3 id="hour-explanation">Horas aproximadas</h3><p>La fuente publica la hora como valores entre 0 y 1 con dos decimales. El piloto los interpreta como <strong>fracciones de un día</strong> (valor × 24 horas). Es una interpretación inferida de los valores, sin diccionario de la capa que confirme la codificación. Su resolución observada equivale a <strong>14.4 minutos</strong>; no permite recuperar minutos exactos.</p><p>El reloj filtra estas horas aproximadas, incluyendo el inicio y excluyendo el final. Un intervalo de 22:00 a 06:00 combina ambos lados de medianoche dentro de las fechas seleccionadas. El valor original 1 se muestra como medianoche aproximada, con una advertencia. No se aplica conversión de zona horaria. Extremos iguales significan todo el día.</p>
     <h3>Tramos y geometría</h3><p>Las barras cuentan registros por intervalos del <strong>kilometraje reportado</strong>, sumando ambos sentidos. Cada barra se ancla al trazo oficial más próximo a un registro representativo del tramo. La altura y el color expresan el conteo; el ancho se adapta a la escala del mapa. La escala se mantiene fija al cambiar horas o semana para una misma autopista y tamaño de tramo.</p><p>Los trazados proceden de la capa <code>red_vial_cuota_concesionario_geo</code> del IMT, con alias explícitos entre sus nombres y los de los accidentes. Se preservan calzadas y ramales; su suma no se presenta como longitud de la autopista. La geometría disponible puede ser anterior a 2025. Un tramo sin barra indica ausencia de registros seleccionados, sin acreditar cobertura o ausencia real de siniestros.</p>
+    <h3>Revisión de históricos · 16 de octubre de 2026</h3><p>Se revisaron las capas públicas del IMT, reportes de CAPUFE y el catálogo histórico de Policía Federal. Los archivos descargables revisados de CAPUFE son agregados sin ubicación ni hora por evento. El enlace original del histórico de Policía Federal está caído y no se recuperó una copia de datos verificable. Por eso el piloto conserva estas dos semanas y no genera puntos a partir de totales.</p><p>Siniestralimap de Jalisco sí ofrece 2015–2025, pero cubre siniestros con víctimas en municipios metropolitanos y georreferencia al cruce vial más cercano; no respalda una serie nacional de autopistas de cuota. <a href="./data/history-search.json" target="_blank" rel="noopener">Consultar fuentes revisadas y opciones para ampliar ↗</a>.</p>
     <h3>Consulta y reutilización</h3><p>Fuentes: <a href="https://rnc.imt.mx/geossi/" target="_blank" rel="noopener">GeoPlataforma SICT</a> y <a href="https://rnc.imt.mx/geossi/recursos/ol3.js" target="_blank" rel="noopener">definición pública de las capas</a>. Fondo: Esri y sus contribuidores. Motor: MapLibre GL JS 5.6.0, distribuido con su licencia BSD.</p>
     <div class="source-links"><a href="./data/pilot.json" target="_blank" download="piloto-siniestros.json">Datos completos + advertencias · JSON</a><a href="./data/audit.json" target="_blank" download="auditoria-siniestros.json">Auditoría · JSON</a><a href="https://github.com/AlejandroRomeroG/autopistas-mexico-siniestros" target="_blank" rel="noopener">Código y reproducción ↗</a></div>`;
 }
@@ -269,4 +300,5 @@ async function init(){
     renderSources();createMap();
   }catch(error){console.error(error);$('loading').innerHTML=`<div style="padding:30px;max-width:420px;text-align:center"><strong>No se pudo preparar el mapa</strong><p>${esc(error.message)}</p><p>Recarga la página. Los datos también están disponibles en el repositorio.</p><a href="https://github.com/AlejandroRomeroG/autopistas-mexico-siniestros">Abrir repositorio ↗</a></div>`;}
 }
+initializeTheme();
 init();

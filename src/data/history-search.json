@@ -1,0 +1,47 @@
+{
+  "reviewedOn": "2026-10-16",
+  "purpose": "Ampliar el piloto con registros históricos individuales que conserven carretera, ubicación y hora.",
+  "newRecordsImported": 0,
+  "conclusion": "La búsqueda no recuperó un archivo histórico adicional de autopistas de cuota que permita ubicar y filtrar eventos por hora sin inventar datos o cambiar la población del mapa.",
+  "candidates": [
+    {
+      "source": "IMT — catálogo público GeoSSI",
+      "url": "https://rnc.imt.mx/geossi/",
+      "checked": "Catálogo WFS global: 349 capas y 21 espacios de trabajo. Catálogo WMS: 179 nombres. Sólo se encontraron las dos semanas existentes y un alias de la segunda semana.",
+      "status": "Sin periodos adicionales descubiertos. El alias no se cuenta como información nueva."
+    },
+    {
+      "source": "CAPUFE — Atención Médica Prehospitalaria y seguros",
+      "url": "https://www.datos.gob.mx/dataset/reporte_accidentes_red_propia",
+      "legacyCSV": "https://pot.capufe.mx/GOBMX/DatosAbiertos/REPORTE-ACCIDENTES-RED-PROPIA.csv",
+      "checked": "Se descargaron 15 recursos oficiales y un CSV legado. Son agregados mensuales o trimestrales por plaza, causa o unidad regional.",
+      "status": "No tienen hora individual, kilómetro o coordenadas de cada accidente. No se transforman los totales en puntos."
+    },
+    {
+      "source": "Policía Federal / SEGOB — Hechos de tránsito",
+      "catalogMirror": "https://datamx.io/dataset/policia-federal",
+      "originalResource": "https://datosabiertos.segob.gob.mx/DatosAbiertos/CNS_PF/Hechos_Transito",
+      "checked": "El catálogo legado declara 2015–noviembre de 2018. Investigaciones documentan microdatos de 2015–2019 con fecha, hora, carretera y kilómetro. No se pudo resolver la diferencia de cobertura sin el archivo original.",
+      "status": "El servidor original no resuelve DNS; el espejo conserva metadatos, sin caché ni tabla de datos. No se recuperó una copia archivada reutilizable."
+    },
+    {
+      "source": "SICT / IMT / Guardia Nacional",
+      "url": "https://micrs.sct.gob.mx/index.php/autotransporte-federal/estadistica-de-accidentes-en-carreteras-federales",
+      "checked": "Los anuarios y reportes descargados publican estadísticas agregadas. Las bibliografías confirman bases administrativas subyacentes, sin exponer un archivo por evento en los enlaces revisados.",
+      "status": "Las tablas por kilómetro o por hora no permiten reconstruir el cruce de ambos filtros ni eventos individuales."
+    },
+    {
+      "source": "IIEG Jalisco — Siniestralimap 2015–2025",
+      "url": "https://iieg.jalisco.gob.mx/datos-abiertos/es/dataset/sinestralimap-2015-2025",
+      "checked": "CSV descargado: 50,433 personas asociadas a 18,686 siniestros. Su población son siniestros con personas lesionadas o fallecidas en municipios del Área Metropolitana de Guadalajara. La georreferenciación se asigna al cruce vial más cercano y el horario viene en franjas de dos horas; la columna de jurisdicción está vacía.",
+      "status": "Es una fuente regional útil para otro alcance. No se incorpora como histórico nacional de autopistas de cuota ni se confunden personas con accidentes."
+    }
+  ],
+  "nextSourceToObtain": {
+    "name": "Extracto anonimizado por evento del SIOC de CAPUFE o de hechos de tránsito de Guardia Nacional / IMT",
+    "fields": ["identificador de evento no personal", "fecha", "hora", "autopista o número de carretera", "tramo", "kilómetro y sentido", "coordenadas si existen", "tipo de siniestro", "lesionados", "fallecidos"],
+    "evidence": "https://sidof.segob.gob.mx/notas/docFuente/5770087",
+    "existingTransparencyResponseLead": "IMT reporta como completada la solicitud 330018122000027 de información 2019–marzo 2022 con fecha, hora, carretera y kilómetro.",
+    "requestSent": false
+  }
+}

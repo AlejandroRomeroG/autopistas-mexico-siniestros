@@ -1,11 +1,12 @@
 <!doctype html>
-<html lang="es">
+<html lang="es" data-theme="dark">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#702781">
+  <meta name="theme-color" content="#1b211f">
   <meta name="description" content="Explora registros reales de siniestros en autopistas de cuota de México por carretera, tramo y hora aproximada. Piloto con datos de SICT e IMT del 30 de junio al 13 de julio de 2025.">
-  <title>Siniestros en autopistas de México</title>
+  <title>Autopistas de México · Siniestros en el camino</title>
+  <script>(()=>{let saved;try{saved=localStorage.getItem('arg.autopistas.theme')}catch{}document.documentElement.dataset.theme=saved==='light'||saved==='dark'?saved:matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'})();</script>
   <link rel="icon" href="./favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="./vendor/maplibre-gl.css">
   <link rel="stylesheet" href="./time-dial.css">
@@ -15,73 +16,44 @@
 </head>
 <body>
   <main class="app-shell">
+    <header class="site-header">
+      <a class="author-mark" href="https://alejandroromerog.github.io/" target="_blank" rel="noopener" aria-label="Abrir el sitio del autor"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M7 29 16 10h8l9 19M11 22h18" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M20 12v4m0 4v4m0 4v3" stroke="currentColor" stroke-width="1.7"/><circle cx="33" cy="8" r="3.5"/></svg></a>
+      <div class="site-title"><p class="eyebrow">CARTOGRAFÍA ABIERTA <span aria-hidden="true">/</span> MÉXICO</p><h1>Autopistas de México<span class="title-period">.</span></h1><p class="site-subtitle">Una exploración de los siniestros en el camino.</p></div>
+      <div class="header-edition"><span class="edition-dot" aria-hidden="true"></span><div>JULIO 2025<small>EDICIÓN PILOTO</small></div></div>
+      <nav class="header-links" aria-label="Sobre este proyecto">
+        <a href="https://alejandroromerog.github.io/" target="_blank" rel="noopener">Más proyectos <span aria-hidden="true">↗</span></a>
+        <button id="open-sources" type="button" aria-label="Datos y metodología"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7.5"/><path d="M10 9v5m0-9v1"/></svg><span class="header-link-label">Datos y método</span></button>
+        <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Cambiar a tema claro" title="Cambiar a tema claro"><svg class="theme-sun" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="3.3"/><path d="M10 1v2m0 14v2M1 10h2m14 0h2M3.6 3.6 5 5m10 10 1.4 1.4M3.6 16.4 5 15M15 5l1.4-1.4"/></svg><svg class="theme-moon" viewBox="0 0 20 20" aria-hidden="true"><path d="M16.9 11.8A7.4 7.4 0 0 1 8.2 3.1 7.5 7.5 0 1 0 16.9 11.8Z"/></svg><span id="theme-label">Oscuro</span></button>
+      </nav>
+    </header>
     <aside class="sidebar" id="sidebar" aria-label="Filtros y resumen">
       <button class="mobile-close" id="close-panel" type="button" aria-label="Cerrar panel de filtros">×</button>
-      <header class="brand">
-        <span class="brand-mark" aria-hidden="true"></span>
-        <div><p class="eyebrow">MÉXICO · RED DE CUOTA</p><h1>Siniestros en<br>autopistas</h1><p class="brand-subtitle">Un mapa para explorar el camino.</p></div>
-      </header>
-      <div class="period-label"><span class="live-dot" aria-hidden="true"></span>30 jun – 13 jul 2025<span class="pilot-tag">PILOTO</span></div>
-      <form id="road-form" class="controls">
-        <label for="road-select">Autopista</label>
-        <select id="road-select" name="road" aria-describedby="road-coverage"><option>Cargando carreteras…</option></select>
-        <p id="road-coverage" class="control-note">Carreteras reportadas por la fuente. El número indica registros ubicables, tras los controles del piloto.</p>
-        <label for="bin-select">Agrupar registros cada</label>
-        <select id="bin-select" name="bin"><option value="1">1 km</option><option value="2">2 km</option><option value="5" selected>5 km</option><option value="10">10 km</option><option value="20">20 km</option></select>
-        <button class="primary-button" id="fit-road" type="submit">Centrar autopista <span aria-hidden="true">↗</span></button>
-      </form>
-      <section class="stats" aria-label="Resumen del filtro actual" aria-live="polite">
-        <div><strong id="stat-count">—</strong><span>registros<br>en mapa</span></div>
-        <div><strong id="stat-bins">—</strong><span>tramos con<br>registros</span></div>
-        <div><strong id="stat-peak">—</strong><span>máximo<br>por tramo</span></div>
-      </section>
-      <div class="selection-summary" id="selection-summary" role="status">Preparando los datos reales del IMT…</div>
-      <p class="coverage-note" id="coverage-note"></p>
-      <button class="text-button records-button" id="open-records" type="button">Ver registros y descargar CSV <span aria-hidden="true">↗</span></button>
-      <div class="sidebar-bottom">
-        <section class="legend" aria-label="Cómo leer el mapa">
-          <p class="eyebrow">CÓMO LEER EL MAPA</p>
-          <div><span class="legend-line" aria-hidden="true"></span>Autopista seleccionada</div>
-          <div><span class="legend-dot" aria-hidden="true"></span>Registro de siniestro</div>
-          <div><span class="legend-gradient" aria-hidden="true"></span>Registros por tramo</div>
-          <div class="legend-scale"><span>Menos</span><span id="legend-max">Más</span></div>
-        </section>
-        <button class="source-button" id="open-sources" type="button"><span class="info-icon" aria-hidden="true">i</span>Datos, cobertura y metodología<span aria-hidden="true">↗</span></button>
-        <p class="small-print">Registros reportados, no una medida del riesgo de viajar.</p>
+      <div class="filter-primary">
+        <form id="road-form" class="controls">
+          <div class="field road-field"><label for="road-select"><span class="field-index">01</span> Elige una autopista</label><select id="road-select" name="road" aria-describedby="road-coverage"><option>Cargando carreteras…</option></select></div>
+          <div class="field bin-field"><label for="bin-select"><span class="field-index">02</span> Tamaño del tramo</label><select id="bin-select" name="bin"><option value="1">1 km</option><option value="2">2 km</option><option value="5" selected>5 km</option><option value="10">10 km</option><option value="20">20 km</option></select></div>
+          <button class="primary-button" id="fit-road" type="submit">Explorar <span aria-hidden="true">↗</span></button>
+        </form>
+        <section class="stats" aria-label="Resumen del filtro actual" aria-live="polite"><div><strong id="stat-count">—</strong><span>registros<br>en mapa</span></div><div><strong id="stat-bins">—</strong><span>tramos con<br>registros</span></div><div><strong id="stat-peak">—</strong><span>máximo<br>por tramo</span></div></section>
       </div>
+      <div class="filter-context"><div class="selection-summary" id="selection-summary" role="status">Preparando los datos reales del IMT…</div><p class="coverage-note" id="coverage-note"></p></div>
+      <p id="road-coverage" class="control-note">El selector muestra carreteras reportadas por la fuente y sus registros ubicables, tras los controles del piloto.</p>
     </aside>
     <section class="map-wrap" aria-label="Mapa de siniestros por autopista">
-      <div id="map" role="region" aria-label="Mapa interactivo de autopistas de México"></div>
-      <canvas id="density-overlay" aria-hidden="true"></canvas>
-      <div class="map-actions">
-        <button class="map-button" id="panel-toggle" type="button" aria-label="Ocultar panel" aria-controls="sidebar" aria-expanded="true"><svg width="20" height="18" viewBox="0 0 20 18" aria-hidden="true"><path d="M2 3h16M2 9h16M2 15h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
-        <button class="map-button" id="view-toggle" type="button" aria-label="Inclinar el mapa" aria-pressed="false">3D</button>
-      </div>
-      <div class="map-caption"><span class="caption-dot" aria-hidden="true"></span><span id="map-caption-text">Datos reales · SICT / IMT</span></div>
-      <section class="week-selector" aria-label="Filtrar por semana">
-        <div class="week-title"><span>PERIODO</span><span class="year-tag">2025</span></div>
-        <div id="week-buttons"></div>
-      </section>
-      <section class="clock-card" aria-label="Filtrar por hora aproximada">
-        <div class="clock-heading"><span>HORA DEL DÍA</span><button class="reset-button" id="reset-hours" type="button">Restablecer</button></div>
-        <div id="time-dial"></div>
-        <button class="approx-label" id="hour-method" type="button">Hora aproximada <span aria-hidden="true">ⓘ</span></button>
-      </section>
+      <div id="map" role="region" aria-label="Mapa interactivo de autopistas de México"></div><canvas id="density-overlay" aria-hidden="true"></canvas>
+      <div class="map-actions"><button class="map-button" id="panel-toggle" type="button" aria-label="Ocultar panel" aria-controls="sidebar" aria-expanded="true"><svg width="18" height="18" viewBox="0 0 20 20" aria-hidden="true"><path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" stroke-width="1.6"/><circle cx="7" cy="5" r="2" fill="currentColor"/><circle cx="13" cy="10" r="2" fill="currentColor"/><circle cx="8" cy="15" r="2" fill="currentColor"/></svg><span>Filtros</span></button><button class="map-button" id="view-toggle" type="button" aria-label="Inclinar el mapa" aria-pressed="false">3D</button></div>
       <div class="road-label" id="road-label">Cargando…</div>
-      <div class="empty-state" id="empty-state" hidden><strong>Sin registros en este horario</strong><p>Prueba otro rango de horas o restablece el reloj.</p><button type="button" id="empty-reset">Ver todo el día</button></div>
-      <div class="map-error" id="map-error" hidden></div>
-      <div class="map-tooltip" id="map-tooltip" role="tooltip" hidden></div>
-      <div class="loading" id="loading"><span class="spinner" aria-hidden="true"></span><span>Cargando autopistas y registros…</span></div>
+      <div class="exploration-dock">
+        <section class="week-selector" aria-label="Filtrar por semana"><div class="week-title"><span class="field-index">03</span><span>PERIODO</span><span class="year-tag">2025</span></div><div id="week-buttons"></div><p class="period-footnote">Registros de las dos semanas<br>publicadas por SICT / IMT.</p></section>
+        <section class="clock-card" aria-label="Filtrar por hora aproximada"><div class="clock-heading"><span><span class="field-index">04</span> HORA DEL DÍA</span><button class="reset-button" id="reset-hours" type="button">Todo el día <span aria-hidden="true">↺</span></button></div><div id="time-dial"></div><button class="approx-label" id="hour-method" type="button">Hora aproximada <span aria-hidden="true">↗</span></button></section>
+      </div>
+      <section class="map-key" aria-label="Cómo leer el mapa"><p class="eyebrow">LECTURA DEL MAPA</p><div class="key-row"><span class="legend-line" aria-hidden="true"></span><span>Autopista seleccionada</span></div><div class="key-row"><span class="legend-dot" aria-hidden="true"></span><span>Registro de siniestro</span></div><div class="key-gradient"><span>Registros por tramo</span><i class="legend-gradient" aria-hidden="true"></i><div class="legend-scale"><span>Menos</span><span id="legend-max">Más</span></div></div><p class="small-print">Los conteos no miden el riesgo de viajar.</p></section>
+      <div class="empty-state" id="empty-state" hidden><strong>Sin registros en este horario</strong><p>Prueba otro rango de horas o restablece el reloj.</p><button type="button" id="empty-reset">Ver todo el día</button></div><div class="map-error" id="map-error" hidden></div><div class="map-tooltip" id="map-tooltip" role="tooltip" hidden></div><div class="loading" id="loading"><span class="spinner" aria-hidden="true"></span><span>Cargando autopistas y registros…</span></div>
     </section>
+    <footer class="site-footer"><div class="map-caption"><span class="caption-dot" aria-hidden="true"></span><span id="map-caption-text">Datos reales · SICT / IMT</span></div><button class="text-button records-button" id="open-records" type="button">Explorar registros <span class="csv-label">/ Descargar CSV</span> <span aria-hidden="true">↗</span></button><span class="footer-signature">ARG <span aria-hidden="true">/</span> CARTOGRAFÍA</span></footer>
   </main>
-  <dialog id="sources-dialog" class="data-dialog" aria-labelledby="sources-heading">
-    <div class="dialog-header"><div><p class="eyebrow">FUENTES ABIERTAS</p><h2 id="sources-heading">Datos y cobertura del piloto</h2></div><button class="close-dialog" type="button" aria-label="Cerrar">×</button></div>
-    <div class="dialog-body" id="source-content"></div>
-  </dialog>
-  <dialog id="records-dialog" class="data-dialog records-dialog" aria-labelledby="records-heading">
-    <div class="dialog-header"><div><p class="eyebrow">REGISTROS DEL FILTRO ACTUAL</p><h2 id="records-heading">Siniestros reportados</h2></div><button class="close-dialog" type="button" aria-label="Cerrar">×</button></div>
-    <div class="dialog-body"><p id="records-description"></p><div class="record-tools"><button id="download-csv" class="secondary-button" type="button">Descargar CSV del filtro</button><span id="records-pagination"></span><button class="page-button" id="records-prev" type="button" aria-label="Página anterior">←</button><button class="page-button" id="records-next" type="button" aria-label="Página siguiente">→</button></div><div class="table-scroll"><table><thead><tr><th>Fecha</th><th>Hora aprox.</th><th>Km reportado</th><th>Tipo</th><th>Lesionados</th><th>Fallecidos</th></tr></thead><tbody id="records-body"></tbody></table></div></div>
-  </dialog>
+  <dialog id="sources-dialog" class="data-dialog" aria-labelledby="sources-heading"><div class="dialog-header"><div><p class="eyebrow">FUENTES ABIERTAS</p><h2 id="sources-heading">Datos y cobertura del piloto</h2></div><button class="close-dialog" type="button" aria-label="Cerrar">×</button></div><div class="dialog-body" id="source-content"></div></dialog>
+  <dialog id="records-dialog" class="data-dialog records-dialog" aria-labelledby="records-heading"><div class="dialog-header"><div><p class="eyebrow">REGISTROS DEL FILTRO ACTUAL</p><h2 id="records-heading">Siniestros reportados</h2></div><button class="close-dialog" type="button" aria-label="Cerrar">×</button></div><div class="dialog-body"><p id="records-description"></p><div class="record-tools"><button id="download-csv" class="secondary-button" type="button">Descargar CSV del filtro</button><span id="records-pagination"></span><button class="page-button" id="records-prev" type="button" aria-label="Página anterior">←</button><button class="page-button" id="records-next" type="button" aria-label="Página siguiente">→</button></div><div class="table-scroll"><table><thead><tr><th>Fecha</th><th>Hora aprox.</th><th>Km reportado</th><th>Tipo</th><th>Lesionados</th><th>Fallecidos</th></tr></thead><tbody id="records-body"></tbody></table></div></div></dialog>
   <noscript>Activa JavaScript para explorar este mapa. Los datos y el código están disponibles en el repositorio del proyecto.</noscript>
 </body>
 </html>
