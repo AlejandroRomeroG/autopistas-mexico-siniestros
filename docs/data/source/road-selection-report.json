@@ -1,0 +1,1082 @@
+{
+  "Acatzingo - Cd. Mendoza": {
+    "reportedAccidents": 20,
+    "sourceSegments": 125,
+    "sourceNames": [
+      "Acatzingo - Ciudad Mendoza"
+    ],
+    "sourceConcessions": [
+      "Acatzingo - Cd. Mendoza"
+    ],
+    "within1000m": 20,
+    "medianDistanceMeters": 2.32,
+    "maxDistanceMeters": 14.08
+  },
+  "Agua Dulce - Cárdenas": {
+    "reportedAccidents": 4,
+    "sourceSegments": 41,
+    "sourceNames": [
+      "Agua Dulce - Cárdenas",
+      "Napoleón",
+      "Reyna Victoria"
+    ],
+    "sourceConcessions": [
+      "Agua Dulce - Cárdenas"
+    ],
+    "within1000m": 4,
+    "medianDistanceMeters": 1.59,
+    "maxDistanceMeters": 3.68
+  },
+  "Amozoc - Perote y Lib. De Perote": {
+    "reportedAccidents": 12,
+    "sourceSegments": 132,
+    "sourceNames": [
+      "Amozoc - Perote",
+      "Libramiento Perote"
+    ],
+    "sourceConcessions": [
+      "Amozoc - Perote",
+      "Libramiento de Perote"
+    ],
+    "within1000m": 12,
+    "medianDistanceMeters": 4.56,
+    "maxDistanceMeters": 14.86
+  },
+  "Armería - Manzanillo": {
+    "reportedAccidents": 16,
+    "sourceSegments": 158,
+    "sourceNames": [
+      "Armería - Manzanillo"
+    ],
+    "sourceConcessions": [
+      "Armería - Manzanillo"
+    ],
+    "within1000m": 16,
+    "medianDistanceMeters": 1.84,
+    "maxDistanceMeters": 3.49
+  },
+  "Arriaga - Ocozocoautla": {
+    "reportedAccidents": 1,
+    "sourceSegments": 121,
+    "sourceNames": [
+      "Arriaga - Ocozocoautla"
+    ],
+    "sourceConcessions": [
+      "Arriaga - Ocozocoautla"
+    ],
+    "within1000m": 1,
+    "medianDistanceMeters": 6.76,
+    "maxDistanceMeters": 6.76
+  },
+  "Atlacomulco - Maravatío": {
+    "reportedAccidents": 38,
+    "sourceSegments": 125,
+    "sourceNames": [
+      "Atlacomulco - Maravatío"
+    ],
+    "sourceConcessions": [
+      "Atlacomulco - Maravatío"
+    ],
+    "within1000m": 38,
+    "medianDistanceMeters": 5.69,
+    "maxDistanceMeters": 16.89
+  },
+  "Cadereyta - Reynosa": {
+    "reportedAccidents": 12,
+    "sourceSegments": 140,
+    "sourceNames": [
+      "Cadereyta de Jiménez - La Sierrita"
+    ],
+    "sourceConcessions": [
+      "Cadereyta - Reynosa"
+    ],
+    "within1000m": 12,
+    "medianDistanceMeters": 2.05,
+    "maxDistanceMeters": 9.37
+  },
+  "Camargo - Delicias": {
+    "reportedAccidents": 2,
+    "sourceSegments": 238,
+    "sourceNames": [
+      "Jiménez - Chihuahua"
+    ],
+    "sourceConcessions": [
+      "Delicias - Camargo. Tramo Jiménez - Chihuahua"
+    ],
+    "within1000m": 2,
+    "medianDistanceMeters": 1.1,
+    "maxDistanceMeters": 1.1
+  },
+  "Cardel - Poza Rica": {
+    "reportedAccidents": 3,
+    "sourceSegments": 103,
+    "sourceNames": [
+      "Cardel - Poza Rica"
+    ],
+    "sourceConcessions": [
+      "Cardel - Poza Rica (Tramo Laguna Verde - Gutiérrez Zamora)"
+    ],
+    "within1000m": 3,
+    "medianDistanceMeters": 0.87,
+    "maxDistanceMeters": 0.88
+  },
+  "Cardel - Veracruz": {
+    "reportedAccidents": 1,
+    "sourceSegments": 124,
+    "sourceNames": [
+      "Cardel - Veracruz"
+    ],
+    "sourceConcessions": [
+      "Cardel - Veracruz"
+    ],
+    "within1000m": 1,
+    "medianDistanceMeters": 3.41,
+    "maxDistanceMeters": 3.41
+  },
+  "Cd. Mendoza - Córdoba": {
+    "reportedAccidents": 9,
+    "sourceSegments": 248,
+    "sourceNames": [
+      "Ciudad Mendoza - Córdoba"
+    ],
+    "sourceConcessions": [
+      "Cd. Mendoza - Córdoba"
+    ],
+    "within1000m": 9,
+    "medianDistanceMeters": 3.59,
+    "maxDistanceMeters": 5.15
+  },
+  "Cd. Valles - Tamuín": {
+    "reportedAccidents": 2,
+    "sourceSegments": 31,
+    "sourceNames": [
+      "Libramiento Ciudad Valles - Tamuín"
+    ],
+    "sourceConcessions": [
+      "Cd. Valles-Tamuín"
+    ],
+    "within1000m": 0,
+    "medianDistanceMeters": 69654.98,
+    "maxDistanceMeters": 69654.98
+  },
+  "Cedral - Playa del Cármen": {
+    "reportedAccidents": 15,
+    "sourceSegments": 22,
+    "sourceNames": [
+      "Ramal a Playa del Carmen"
+    ],
+    "sourceConcessions": [
+      "El Cedral - Tintal - Playa del Carmen"
+    ],
+    "within1000m": 2,
+    "medianDistanceMeters": 66141.38,
+    "maxDistanceMeters": 655415.21
+  },
+  "Chamapa - Lechería": {
+    "reportedAccidents": 16,
+    "sourceSegments": 228,
+    "sourceNames": [
+      "La Venta - Lechería"
+    ],
+    "sourceConcessions": [
+      "Chamapa-Lechería, inlcuye Ramal Lomas Verdes"
+    ],
+    "within1000m": 16,
+    "medianDistanceMeters": 1.3,
+    "maxDistanceMeters": 15.09
+  },
+  "Champotón - Campeche": {
+    "reportedAccidents": 1,
+    "sourceSegments": 25,
+    "sourceNames": [
+      "Champotón - Campeche"
+    ],
+    "sourceConcessions": [
+      "Champotón - Campeche"
+    ],
+    "within1000m": 1,
+    "medianDistanceMeters": 4.69,
+    "maxDistanceMeters": 4.69
+  },
+  "Chapalilla - Compostela": {
+    "reportedAccidents": 3,
+    "sourceSegments": 63,
+    "sourceNames": [
+      "Chapalilla - Compostela"
+    ],
+    "sourceConcessions": [
+      "Chapalilla - Compostela"
+    ],
+    "within1000m": 3,
+    "medianDistanceMeters": 3.51,
+    "maxDistanceMeters": 5.1
+  },
+  "Cuacnopalan - Oaxaca": {
+    "reportedAccidents": 22,
+    "sourceSegments": 235,
+    "sourceNames": [
+      "Cuacnopalan - Oaxaca"
+    ],
+    "sourceConcessions": [
+      "Cuacnopalan - Oaxaca"
+    ],
+    "within1000m": 22,
+    "medianDistanceMeters": 2.73,
+    "maxDistanceMeters": 9.55
+  },
+  "Cuernavaca - Acapulco": {
+    "reportedAccidents": 36,
+    "sourceSegments": 466,
+    "sourceNames": [
+      "Acereros",
+      "Cuernavaca - Acapulco",
+      "Ignacio Allende"
+    ],
+    "sourceConcessions": [
+      "Cuernavaca-Acapulco"
+    ],
+    "within1000m": 36,
+    "medianDistanceMeters": 2.28,
+    "maxDistanceMeters": 8.03
+  },
+  "Córdoba - Veracruz": {
+    "reportedAccidents": 22,
+    "sourceSegments": 146,
+    "sourceNames": [
+      "Córdoba - Veracruz"
+    ],
+    "sourceConcessions": [
+      "Córdoba - Veracruz"
+    ],
+    "within1000m": 22,
+    "medianDistanceMeters": 1.35,
+    "maxDistanceMeters": 137.84
+  },
+  "Durango - Mazatlán": {
+    "reportedAccidents": 13,
+    "sourceSegments": 357,
+    "sourceNames": [
+      "Agustín de Iturbide",
+      "Durango - Villa Unión"
+    ],
+    "sourceConcessions": [
+      "Durango - Mazatlán"
+    ],
+    "within1000m": 3,
+    "medianDistanceMeters": 5715.54,
+    "maxDistanceMeters": 571789.39
+  },
+  "Durango - Yerbanis": {
+    "reportedAccidents": 2,
+    "sourceSegments": 131,
+    "sourceNames": [
+      "Durango - Gómez Palacio"
+    ],
+    "sourceConcessions": [
+      "Durango - Yerbanís"
+    ],
+    "within1000m": 2,
+    "medianDistanceMeters": 1.46,
+    "maxDistanceMeters": 1.46
+  },
+  "Durango - Yerbanís": {
+    "reportedAccidents": 2,
+    "sourceSegments": 131,
+    "sourceNames": [
+      "Durango - Gómez Palacio"
+    ],
+    "sourceConcessions": [
+      "Durango - Yerbanís"
+    ],
+    "within1000m": 2,
+    "medianDistanceMeters": 4.27,
+    "maxDistanceMeters": 4.27
+  },
+  "Ecatepec - Pirámides": {
+    "reportedAccidents": 5,
+    "sourceSegments": 105,
+    "sourceNames": [
+      "Ecatepec - Pirámides"
+    ],
+    "sourceConcessions": [
+      "Ecatepec - Pirámides"
+    ],
+    "within1000m": 5,
+    "medianDistanceMeters": 1.09,
+    "maxDistanceMeters": 6.25
+  },
+  "El Centinela - La Rumorosa": {
+    "reportedAccidents": 15,
+    "sourceSegments": 79,
+    "sourceNames": [
+      "Mexicali - Tijuana",
+      "N/A"
+    ],
+    "sourceConcessions": [
+      "El Centinela - La Rumorosa"
+    ],
+    "within1000m": 14,
+    "medianDistanceMeters": 4.74,
+    "maxDistanceMeters": 20321.76
+  },
+  "Ensenada - Tijuana": {
+    "reportedAccidents": 20,
+    "sourceSegments": 227,
+    "sourceNames": [
+      "Escénica Tijuana - Ensenada",
+      "Tijuana - San Miguel"
+    ],
+    "sourceConcessions": [
+      "Tijuana - Ensenada"
+    ],
+    "within1000m": 20,
+    "medianDistanceMeters": 2.35,
+    "maxDistanceMeters": 7.59
+  },
+  "Ent. Tulancingo - Nuevo Necaxa": {
+    "reportedAccidents": 23,
+    "sourceSegments": 82,
+    "sourceNames": [
+      "Ent. Tulancingo - Venta Grande",
+      "Tejocotal - Nuevo Necaxa"
+    ],
+    "sourceConcessions": [
+      "Tulancingo - Nuevo Necaxa"
+    ],
+    "within1000m": 23,
+    "medianDistanceMeters": 2.89,
+    "maxDistanceMeters": 22.83
+  },
+  "Estación Don - Nogales": {
+    "reportedAccidents": 40,
+    "sourceSegments": 858,
+    "sourceNames": [
+      "Ciudad Obregón - Hermosillo",
+      "Hermosillo - Nogales",
+      "Los Mochis - Ciudad Obregón"
+    ],
+    "sourceConcessions": [
+      "Estación Don - Nogales"
+    ],
+    "within1000m": 21,
+    "medianDistanceMeters": 5.12,
+    "maxDistanceMeters": 32681.53
+  },
+  "Guadalajara - Colima": {
+    "reportedAccidents": 10,
+    "sourceSegments": 344,
+    "sourceNames": [
+      "Acatlán de Juárez - El Trapiche"
+    ],
+    "sourceConcessions": [
+      "Guadalajara - Colima"
+    ],
+    "within1000m": 10,
+    "medianDistanceMeters": 2.59,
+    "maxDistanceMeters": 135.9
+  },
+  "Guadalajara - Tepic": {
+    "reportedAccidents": 3,
+    "sourceSegments": 341,
+    "sourceNames": [
+      "Guadalajara - Tepic"
+    ],
+    "sourceConcessions": [
+      "Guadalajara - Tepic"
+    ],
+    "within1000m": 3,
+    "medianDistanceMeters": 0.14,
+    "maxDistanceMeters": 3.2
+  },
+  "Gutiérrez Zamora - Tihuatlán": {
+    "reportedAccidents": 1,
+    "sourceSegments": 35,
+    "sourceNames": [
+      "Tihuatlán - El Palmar"
+    ],
+    "sourceConcessions": [
+      "Gutiérrez Zamora - Tihuatlán"
+    ],
+    "within1000m": 1,
+    "medianDistanceMeters": 3.31,
+    "maxDistanceMeters": 3.31
+  },
+  "Gómez Palacio - Corralitos": {
+    "reportedAccidents": 2,
+    "sourceSegments": 239,
+    "sourceNames": [
+      "Gómez Palacio - Jiménez"
+    ],
+    "sourceConcessions": [
+      "Gómez Palacio - Corralitos"
+    ],
+    "within1000m": 2,
+    "medianDistanceMeters": 7.54,
+    "maxDistanceMeters": 7.54
+  },
+  "Jala - Compostela": {
+    "reportedAccidents": 15,
+    "sourceSegments": 75,
+    "sourceNames": [
+      "Jala - Compostela - Las Varas",
+      "Jala - Las Caleras",
+      "Tepic - Puerto Vallarta"
+    ],
+    "sourceConcessions": [
+      "Jala - Compostela - Las Varas Incluye Ramal a Compostela"
+    ],
+    "within1000m": 15,
+    "medianDistanceMeters": 3.03,
+    "maxDistanceMeters": 278.64
+  },
+  "Jantetelco - El Higuerón": {
+    "reportedAccidents": 1,
+    "sourceSegments": 76,
+    "sourceNames": [
+      "Jantetelco - El Higuerón"
+    ],
+    "sourceConcessions": [
+      "Jantetelco - El Higuerón (Siglo XXI)"
+    ],
+    "within1000m": 1,
+    "medianDistanceMeters": 3.62,
+    "maxDistanceMeters": 3.62
+  },
+  "La Marquesa - Lerma": {
+    "reportedAccidents": 2,
+    "sourceSegments": 31,
+    "sourceNames": [
+      "Toluca - La Marquesa"
+    ],
+    "sourceConcessions": [
+      "La Marquesa-Lerma"
+    ],
+    "within1000m": 2,
+    "medianDistanceMeters": 3.12,
+    "maxDistanceMeters": 3.12
+  },
+  "La Pera - Cuautla": {
+    "reportedAccidents": 7,
+    "sourceSegments": 91,
+    "sourceNames": [
+      "La Pera - Cuautla",
+      "N/A"
+    ],
+    "sourceConcessions": [
+      "La Pera - Cuautla"
+    ],
+    "within1000m": 7,
+    "medianDistanceMeters": 0.2,
+    "maxDistanceMeters": 26.7
+  },
+  "La Rumorosa - Tecate": {
+    "reportedAccidents": 8,
+    "sourceSegments": 68,
+    "sourceNames": [
+      "Mexicali - Tijuana"
+    ],
+    "sourceConcessions": [
+      "La Rumorosa - Tecate"
+    ],
+    "within1000m": 8,
+    "medianDistanceMeters": 0.52,
+    "maxDistanceMeters": 9.67
+  },
+  "La Tinaja - Cosoleacaque": {
+    "reportedAccidents": 34,
+    "sourceSegments": 342,
+    "sourceNames": [
+      "La Tinaja - Cosoleacaque"
+    ],
+    "sourceConcessions": [
+      "La Tinaja - Cosoleacaque"
+    ],
+    "within1000m": 34,
+    "medianDistanceMeters": 2.94,
+    "maxDistanceMeters": 614.97
+  },
+  "Lagos de Moreno - San Luis Potosí (Villa de Arriaga": {
+    "reportedAccidents": 4,
+    "sourceSegments": 36,
+    "sourceNames": [
+      "Lagos de Moreno - Villa de Arriaga"
+    ],
+    "sourceConcessions": [
+      "Lagos de Moreno - San Luis Potosí (Villa de Arriaga)"
+    ],
+    "within1000m": 2,
+    "medianDistanceMeters": 22835.75,
+    "maxDistanceMeters": 25025.85
+  },
+  "Las Choapas - Ocozocoautla": {
+    "reportedAccidents": 11,
+    "sourceSegments": 250,
+    "sourceNames": [
+      "Las Choapas - Ocozocoautla"
+    ],
+    "sourceConcessions": [
+      "Las Choapas - Ocozocoautla"
+    ],
+    "within1000m": 11,
+    "medianDistanceMeters": 2.34,
+    "maxDistanceMeters": 114.76
+  },
+  "Libramiento Amecameca - Nepantla": {
+    "reportedAccidents": 4,
+    "sourceSegments": 37,
+    "sourceNames": [
+      "Amecameca - Cuautla"
+    ],
+    "sourceConcessions": [
+      "Libramiento Amecameca - Nepantla"
+    ],
+    "within1000m": 4,
+    "medianDistanceMeters": 1.24,
+    "maxDistanceMeters": 3.72
+  },
+  "Libramiento Nororiente de Querétaro": {
+    "reportedAccidents": 20,
+    "sourceSegments": 38,
+    "sourceNames": [
+      "Libramiento Noreste de Querétaro"
+    ],
+    "sourceConcessions": [
+      "Libramiento Nororiente de Querétaro"
+    ],
+    "within1000m": 19,
+    "medianDistanceMeters": 0.79,
+    "maxDistanceMeters": 107490.03
+  },
+  "Libramiento Norte de San Luis Potosí (Tramo I)": {
+    "reportedAccidents": 1,
+    "sourceSegments": 39,
+    "sourceNames": [
+      "Libramiento Norte de San Luis Potosí"
+    ],
+    "sourceConcessions": [
+      "Libramiento Norte de San Luis Potosí"
+    ],
+    "within1000m": 0,
+    "medianDistanceMeters": 1203.29,
+    "maxDistanceMeters": 1203.29
+  },
+  "Libramiento Norte de la Ciudad de México": {
+    "reportedAccidents": 4,
+    "sourceSegments": 378,
+    "sourceNames": [
+      "Libramiento Norte de la Ciudad de México"
+    ],
+    "sourceConcessions": [
+      "Libramiento Norte de la Ciudad de México (ARCO NORTE)"
+    ],
+    "within1000m": 4,
+    "medianDistanceMeters": 2.43,
+    "maxDistanceMeters": 5.23
+  },
+  "Libramiento Norte de la Laguna": {
+    "reportedAccidents": 2,
+    "sourceSegments": 33,
+    "sourceNames": [
+      "Libramiento Norte de la Laguna"
+    ],
+    "sourceConcessions": [
+      "Libramiento Norte de La Laguna"
+    ],
+    "within1000m": 2,
+    "medianDistanceMeters": 7.85,
+    "maxDistanceMeters": 7.85
+  },
+  "Libramiento Oriente de Saltillo": {
+    "reportedAccidents": 6,
+    "sourceSegments": 23,
+    "sourceNames": [
+      "Libramiento Oriente Saltillo"
+    ],
+    "sourceConcessions": [
+      "Libramiento Oriente de Saltillo"
+    ],
+    "within1000m": 5,
+    "medianDistanceMeters": 5.43,
+    "maxDistanceMeters": 9049.52
+  },
+  "Libramiento Oriente de San Luis Potosí": {
+    "reportedAccidents": 3,
+    "sourceSegments": 46,
+    "sourceNames": [
+      "Libramiento Oriente de San Luis Potosí"
+    ],
+    "sourceConcessions": [
+      "Libramiento Oriente de San Luis Potosí"
+    ],
+    "within1000m": 3,
+    "medianDistanceMeters": 1.86,
+    "maxDistanceMeters": 2.37
+  },
+  "Libramiento Poniente de Acapulco": {
+    "reportedAccidents": 2,
+    "sourceSegments": 69,
+    "sourceNames": [
+      "Libramiento Poniente de Acapulco"
+    ],
+    "sourceConcessions": [
+      "Libramiento Poniente de Acapulco"
+    ],
+    "within1000m": 0,
+    "medianDistanceMeters": 9657.65,
+    "maxDistanceMeters": 9657.65
+  },
+  "Libramiento Poniente de Tampico": {
+    "reportedAccidents": 1,
+    "sourceSegments": 52,
+    "sourceNames": [
+      "Libramiento Poniente de Tampico"
+    ],
+    "sourceConcessions": [
+      "Libramiento Poniente de Tampico"
+    ],
+    "within1000m": 1,
+    "medianDistanceMeters": 1.93,
+    "maxDistanceMeters": 1.93
+  },
+  "Libramiento Sur II de Reynosa": {
+    "reportedAccidents": 3,
+    "sourceSegments": 48,
+    "sourceNames": [
+      "Libramiento de Reynosa"
+    ],
+    "sourceConcessions": [
+      "Libramiento Sur II de Reynosa"
+    ],
+    "within1000m": 3,
+    "medianDistanceMeters": 16.49,
+    "maxDistanceMeters": 17.49
+  },
+  "Libramiento Sur de Guadalajara": {
+    "reportedAccidents": 1,
+    "sourceSegments": 232,
+    "sourceNames": [
+      "Macrolibramiento de Guadalajara"
+    ],
+    "sourceConcessions": [
+      "Libramiento Sur de Guadalajara (Pacífico Sur)"
+    ],
+    "within1000m": 1,
+    "medianDistanceMeters": 9.21,
+    "maxDistanceMeters": 9.21
+  },
+  "Libramiento de Cd. Obregón": {
+    "reportedAccidents": 1,
+    "sourceSegments": 39,
+    "sourceNames": [
+      "Libramiento de Ciudad Obregón"
+    ],
+    "sourceConcessions": [
+      "Libramiento de Obregón"
+    ],
+    "within1000m": 1,
+    "medianDistanceMeters": 7.92,
+    "maxDistanceMeters": 7.92
+  },
+  "Libramiento de Chihuahua": {
+    "reportedAccidents": 5,
+    "sourceSegments": 68,
+    "sourceNames": [
+      "Libramiento Oriente"
+    ],
+    "sourceConcessions": [
+      "Libramiento Oriente de Chihuahua"
+    ],
+    "within1000m": 5,
+    "medianDistanceMeters": 3.43,
+    "maxDistanceMeters": 5.74
+  },
+  "Libramiento de Cuernavaca": {
+    "reportedAccidents": 15,
+    "sourceSegments": 31,
+    "sourceNames": [
+      "Libramiento de Cuernavaca (Paso ExprÃ©s)"
+    ],
+    "sourceConcessions": [
+      "Libramiento de Cuernavaca"
+    ],
+    "within1000m": 14,
+    "medianDistanceMeters": 3.34,
+    "maxDistanceMeters": 164350.96
+  },
+  "Libramiento de Villahermosa": {
+    "reportedAccidents": 1,
+    "sourceSegments": 68,
+    "sourceNames": [
+      "Libramiento Villahermosa"
+    ],
+    "sourceConcessions": [
+      "Libramiento de Villahermosa"
+    ],
+    "within1000m": 0,
+    "medianDistanceMeters": 4237.79,
+    "maxDistanceMeters": 4237.79
+  },
+  "Mazatlán - Culiacán": {
+    "reportedAccidents": 1,
+    "sourceSegments": 254,
+    "sourceNames": [
+      "Mazatlán - Culiacán"
+    ],
+    "sourceConcessions": [
+      "Mazatlán - Culiacán (Libramiento de Culiacán, Libramiento de Mazatlán incluye Ramal al Aeropuerto (Pacífico No"
+    ],
+    "within1000m": 0,
+    "medianDistanceMeters": 16728.06,
+    "maxDistanceMeters": 16728.06
+  },
+  "Monterrey - Nuevo Laredo": {
+    "reportedAccidents": 9,
+    "sourceSegments": 198,
+    "sourceNames": [
+      "Monterrey - Nuevo Laredo"
+    ],
+    "sourceConcessions": [
+      "",
+      "Monterrey - Nuevo Laredo",
+      "Monterrey - Nuevo Laredo tramo La Gloria-San Fernando (APP)"
+    ],
+    "within1000m": 9,
+    "medianDistanceMeters": 3.52,
+    "maxDistanceMeters": 4.97
+  },
+  "México - Cuernavaca": {
+    "reportedAccidents": 53,
+    "sourceSegments": 91,
+    "sourceNames": [
+      "México - Cuernavaca",
+      "México - Cuernavaca Cuota"
+    ],
+    "sourceConcessions": [
+      "México - Cuernavaca"
+    ],
+    "within1000m": 50,
+    "medianDistanceMeters": 2.79,
+    "maxDistanceMeters": 185324.04
+  },
+  "México - La Marquesa": {
+    "reportedAccidents": 5,
+    "sourceSegments": 62,
+    "sourceNames": [
+      "Constituyentes - La Marquesa",
+      "México - La Marquesa"
+    ],
+    "sourceConcessions": [
+      "Constituyentes - La Marquesa"
+    ],
+    "within1000m": 5,
+    "medianDistanceMeters": 4.08,
+    "maxDistanceMeters": 7.46
+  },
+  "México - Pachuca": {
+    "reportedAccidents": 68,
+    "sourceSegments": 188,
+    "sourceNames": [
+      "México - Pachuca",
+      "México - Tizayuca"
+    ],
+    "sourceConcessions": [
+      "Jala - Compostela - Las Varas Incluye Ramal a Compostela"
+    ],
+    "within1000m": 68,
+    "medianDistanceMeters": 4.58,
+    "maxDistanceMeters": 380.73
+  },
+  "México - Puebla": {
+    "reportedAccidents": 57,
+    "sourceSegments": 249,
+    "sourceNames": [
+      "México - Puebla"
+    ],
+    "sourceConcessions": [
+      "México-Puebla"
+    ],
+    "within1000m": 57,
+    "medianDistanceMeters": 1.19,
+    "maxDistanceMeters": 7.52
+  },
+  "México - Querétaro": {
+    "reportedAccidents": 101,
+    "sourceSegments": 457,
+    "sourceNames": [
+      "México - Querétaro"
+    ],
+    "sourceConcessions": [
+      "México - Querétaro"
+    ],
+    "within1000m": 80,
+    "medianDistanceMeters": 2.24,
+    "maxDistanceMeters": 71416.11
+  },
+  "Nuevo Necaxa - Tihuatlán (PPS)": {
+    "reportedAccidents": 13,
+    "sourceSegments": 110,
+    "sourceNames": [
+      "Nuevo Necaxa - Ãvila Camacho",
+      "Ávila Camacho - Tihuatlán"
+    ],
+    "sourceConcessions": [
+      "Nuevo Necaxa - Ávila Camacho (TC1)",
+      "Ávila Camacho - Tihuatlán"
+    ],
+    "within1000m": 13,
+    "medianDistanceMeters": 4.33,
+    "maxDistanceMeters": 8.62
+  },
+  "Perote - Banderilla y Lib. De Xalapa": {
+    "reportedAccidents": 15,
+    "sourceSegments": 156,
+    "sourceNames": [
+      "Libramiento Xalapa",
+      "Perote - Banderilla"
+    ],
+    "sourceConcessions": [
+      "Libramiento de Xalapa",
+      "Perote - Banderilla"
+    ],
+    "within1000m": 15,
+    "medianDistanceMeters": 3.93,
+    "maxDistanceMeters": 11.0
+  },
+  "Peñón - Texcoco": {
+    "reportedAccidents": 3,
+    "sourceSegments": 57,
+    "sourceNames": [
+      "Peñón - Texcoco"
+    ],
+    "sourceConcessions": [
+      "Peñón - Texcoco (PINFRA)"
+    ],
+    "within1000m": 3,
+    "medianDistanceMeters": 2.7,
+    "maxDistanceMeters": 4.02
+  },
+  "Puebla - Acatzingo": {
+    "reportedAccidents": 18,
+    "sourceSegments": 53,
+    "sourceNames": [
+      "Puebla - Acatzingo"
+    ],
+    "sourceConcessions": [
+      "Puebla - Acatzingo"
+    ],
+    "within1000m": 18,
+    "medianDistanceMeters": 1.26,
+    "maxDistanceMeters": 443.83
+  },
+  "Puente Dovalí Jaime": {
+    "reportedAccidents": 2,
+    "sourceSegments": 0,
+    "sourceNames": [],
+    "sourceConcessions": [],
+    "within1000m": 0,
+    "medianDistanceMeters": null,
+    "maxDistanceMeters": null
+  },
+  "Puente de Ixtla - Iguala": {
+    "reportedAccidents": 16,
+    "sourceSegments": 146,
+    "sourceNames": [
+      "Puente de Ixtla - Iguala"
+    ],
+    "sourceConcessions": [
+      "Puente de Ixtla - Iguala"
+    ],
+    "within1000m": 15,
+    "medianDistanceMeters": 3.33,
+    "maxDistanceMeters": 114161.28
+  },
+  "Puerto México - La Carbonera": {
+    "reportedAccidents": 19,
+    "sourceSegments": 98,
+    "sourceNames": [
+      "Ent. Huachichil - Ent. Tramo los Chorros",
+      "Puerto México - Ojo Caliente"
+    ],
+    "sourceConcessions": [
+      "Puerto México-La Carbonera incluye ramal Huachichil"
+    ],
+    "within1000m": 18,
+    "medianDistanceMeters": 4.07,
+    "maxDistanceMeters": 16081.5
+  },
+  "Pátzcuaro - Uruapan": {
+    "reportedAccidents": 1,
+    "sourceSegments": 50,
+    "sourceNames": [
+      "N/D",
+      "Pátzcuaro - Uruapan"
+    ],
+    "sourceConcessions": [
+      "Pátzcuaro - Uruapan"
+    ],
+    "within1000m": 1,
+    "medianDistanceMeters": 0.65,
+    "maxDistanceMeters": 0.65
+  },
+  "Querétaro - Irapuato": {
+    "reportedAccidents": 30,
+    "sourceSegments": 283,
+    "sourceNames": [
+      "Lateral Querétaro - Irapuato",
+      "Querétaro - Irapuato"
+    ],
+    "sourceConcessions": [
+      "Querétaro - Irapuato"
+    ],
+    "within1000m": 29,
+    "medianDistanceMeters": 1.67,
+    "maxDistanceMeters": 3856.7
+  },
+  "Reynosa - Matamoros": {
+    "reportedAccidents": 9,
+    "sourceSegments": 42,
+    "sourceNames": [
+      "Matamoros - Reynosa"
+    ],
+    "sourceConcessions": [
+      "Reynosa - Matamoros"
+    ],
+    "within1000m": 9,
+    "medianDistanceMeters": 1.59,
+    "maxDistanceMeters": 10.06
+  },
+  "San José del Cabo - Cabo San Lucas (Lib. Los Cabos)": {
+    "reportedAccidents": 4,
+    "sourceSegments": 47,
+    "sourceNames": [
+      "Libramiento Cabo San Lucas - San José del Cabo",
+      "Ramal a El Mangle",
+      "San José del Cabo - Aeropuerto Los Cabos"
+    ],
+    "sourceConcessions": [
+      "San José del Cabo - Cabo San Lucas incluye Ramal el Mangle"
+    ],
+    "within1000m": 4,
+    "medianDistanceMeters": 0.84,
+    "maxDistanceMeters": 1.29
+  },
+  "Santa Ana - Altar": {
+    "reportedAccidents": 1,
+    "sourceSegments": 119,
+    "sourceNames": [
+      "Santa Ana - Sonoita"
+    ],
+    "sourceConcessions": [
+      "Santa Ana - Altar"
+    ],
+    "within1000m": 1,
+    "medianDistanceMeters": 5.82,
+    "maxDistanceMeters": 5.82
+  },
+  "Tecate - Tijuana": {
+    "reportedAccidents": 1,
+    "sourceSegments": 44,
+    "sourceNames": [
+      "Mexicali - Tijuana"
+    ],
+    "sourceConcessions": [
+      "Tecate - Tijuana"
+    ],
+    "within1000m": 1,
+    "medianDistanceMeters": 1.46,
+    "maxDistanceMeters": 1.46
+  },
+  "Tihuatlán - Tuxpan Puente Tuxpan": {
+    "reportedAccidents": 5,
+    "sourceSegments": 122,
+    "sourceNames": [
+      "Tihuatlán - Túxpam"
+    ],
+    "sourceConcessions": [
+      "Tihuatlán - Tuxpan incluye Puente Tuxpan"
+    ],
+    "within1000m": 5,
+    "medianDistanceMeters": 4.31,
+    "maxDistanceMeters": 6.84
+  },
+  "Torreón - Saltillo": {
+    "reportedAccidents": 6,
+    "sourceSegments": 29,
+    "sourceNames": [
+      "Felipe II",
+      "Moctezuma",
+      "Saltillo - Torreón"
+    ],
+    "sourceConcessions": [
+      "Torreón - Saltillo"
+    ],
+    "within1000m": 6,
+    "medianDistanceMeters": 1.82,
+    "maxDistanceMeters": 3.45
+  },
+  "Tuxpan - Tampico (Ozuluama)": {
+    "reportedAccidents": 4,
+    "sourceSegments": 65,
+    "sourceNames": [
+      "Túxpam - Tampico"
+    ],
+    "sourceConcessions": [
+      "Tuxpan - Tampico, (Tramo Tuxpan - Ozuluama)"
+    ],
+    "within1000m": 3,
+    "medianDistanceMeters": 19.07,
+    "maxDistanceMeters": 8585.87
+  },
+  "Tuxtla Gutiérrez - San Cristobal": {
+    "reportedAccidents": 8,
+    "sourceSegments": 53,
+    "sourceNames": [
+      "Tuxtla Gutiérrez - San Cristóbal de las Casas"
+    ],
+    "sourceConcessions": [
+      "Tuxtla Gutiérrez - San Cristóbal de las Casas"
+    ],
+    "within1000m": 7,
+    "medianDistanceMeters": 2.03,
+    "maxDistanceMeters": 799672.17
+  },
+  "Ventura - Peyote": {
+    "reportedAccidents": 1,
+    "sourceSegments": 37,
+    "sourceNames": [
+      "Ventura - El Peyote"
+    ],
+    "sourceConcessions": [
+      "Ventura - El Peyote"
+    ],
+    "within1000m": 1,
+    "medianDistanceMeters": 3.05,
+    "maxDistanceMeters": 3.05
+  },
+  "Yerbanis - Gómez Palacio": {
+    "reportedAccidents": 2,
+    "sourceSegments": 99,
+    "sourceNames": [
+      "Durango - Gómez Palacio"
+    ],
+    "sourceConcessions": [
+      "Yerbanís - Gómez Palacios"
+    ],
+    "within1000m": 2,
+    "medianDistanceMeters": 1.21,
+    "maxDistanceMeters": 1.21
+  },
+  "Zacapalco - Rancho Viejo": {
+    "reportedAccidents": 1,
+    "sourceSegments": 22,
+    "sourceNames": [
+      "Zacapalco - Taxco"
+    ],
+    "sourceConcessions": [
+      "Zacapalco - Rancho Viejo"
+    ],
+    "within1000m": 1,
+    "medianDistanceMeters": 12.35,
+    "maxDistanceMeters": 12.35
+  }
+}

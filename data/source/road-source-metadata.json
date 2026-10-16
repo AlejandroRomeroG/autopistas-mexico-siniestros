@@ -1,0 +1,118 @@
+{
+  "retrievedAtUTC": "2026-10-16T18:43:49.827Z",
+  "source": "Instituto Mexicano del Transporte, GeoSSI WFS",
+  "layer": "GEOSSI:red_vial_cuota_concesionario_geo",
+  "sourceFeatureCount": 20496,
+  "query": "https://rnc.imt.mx/geoserver/GEOSSI/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=GEOSSI%3Ared_vial_cuota_concesionario_geo&outputFormat=application%2Fjson&maxFeatures=50000&propertyName=id_red%2Cnombre%2Cautoppte%2Ccodigo%2Ccvecarr%2Cfecha_act%2Clongitud%2Cunion_ini%2Cunion_fin%2Cgeom",
+  "crs": "EPSG:4326 (GeoJSON longitude, latitude)",
+  "processing": "Official line coordinates grouped by reporting road labels using explicit aliases. Coordinate precision rounded to 6 decimal places. No segments created between accident points; no invented connectors. Both carriageways/ramps may be present, so do not use sum of line lengths as highway length.",
+  "aliases": {
+    "Nuevo Necaxa - Tihuatlán (PPS)": [
+      "Nuevo Necaxa - Ávila Camacho (TC1)",
+      "Ávila Camacho - Tihuatlán"
+    ],
+    "Peñón - Texcoco": [
+      "Peñón - Texcoco (PINFRA)"
+    ],
+    "Cedral - Playa del Cármen": [
+      "El Cedral - Tintal - Playa del Carmen"
+    ],
+    "Perote - Banderilla y Lib. De Xalapa": [
+      "Perote - Banderilla",
+      "Libramiento de Xalapa"
+    ],
+    "Amozoc - Perote y Lib. De Perote": [
+      "Amozoc - Perote",
+      "Libramiento de Perote"
+    ],
+    "Tuxpan - Tampico (Ozuluama)": [
+      "Tuxpan - Tampico, (Tramo Tuxpan - Ozuluama)"
+    ],
+    "Libramiento Sur de Guadalajara": [
+      "Libramiento Sur de Guadalajara (Pacífico Sur)"
+    ],
+    "Ent. Tulancingo - Nuevo Necaxa": [
+      "Tulancingo - Nuevo Necaxa"
+    ],
+    "Tihuatlán - Tuxpan Puente Tuxpan": [
+      "Tihuatlán - Tuxpan incluye Puente Tuxpan"
+    ],
+    "Jala - Compostela": [
+      "Jala - Compostela - Las Varas Incluye Ramal a Compostela"
+    ],
+    "México - La Marquesa": [
+      "Constituyentes - La Marquesa"
+    ],
+    "Libramiento Norte de San Luis Potosí (Tramo I)": [
+      "Libramiento Norte de San Luis Potosí"
+    ],
+    "Tuxtla Gutiérrez - San Cristobal": [
+      "Tuxtla Gutiérrez - San Cristóbal de las Casas"
+    ],
+    "Libramiento Norte de la Ciudad de México": [
+      "Libramiento Norte de la Ciudad de México (ARCO NORTE)"
+    ],
+    "Puerto México - La Carbonera": [
+      "Puerto México-La Carbonera incluye ramal Huachichil"
+    ],
+    "Ensenada - Tijuana": [
+      "Tijuana - Ensenada"
+    ],
+    "Chamapa - Lechería": [
+      "Chamapa-Lechería, inlcuye Ramal Lomas Verdes"
+    ],
+    "Lagos de Moreno - San Luis Potosí (Villa de Arriaga": [
+      "Lagos de Moreno - San Luis Potosí (Villa de Arriaga)"
+    ],
+    "Libramiento de Chihuahua": [
+      "Libramiento Oriente de Chihuahua"
+    ],
+    "San José del Cabo - Cabo San Lucas (Lib. Los Cabos)": [
+      "San José del Cabo - Cabo San Lucas incluye Ramal el Mangle"
+    ],
+    "Yerbanis - Gómez Palacio": [
+      "Yerbanís - Gómez Palacios"
+    ],
+    "Jantetelco - El Higuerón": [
+      "Jantetelco - El Higuerón (Siglo XXI)"
+    ],
+    "Camargo - Delicias": [
+      "Delicias - Camargo. Tramo Jiménez - Chihuahua"
+    ],
+    "Ventura - Peyote": [
+      "Ventura - El Peyote"
+    ],
+    "Libramiento de Cd. Obregón": [
+      "Libramiento de Obregón"
+    ],
+    "Mazatlán - Culiacán": [
+      "Mazatlán - Culiacán (Libramiento de Culiacán, Libramiento de Mazatlán incluye Ramal al Aeropuerto (Pacífico No"
+    ],
+    "Cardel - Poza Rica": [
+      "Cardel - Poza Rica (Tramo Laguna Verde - Gutiérrez Zamora)"
+    ]
+  },
+  "nameOverrides": {
+    "México - Pachuca": [
+      "México - Pachuca",
+      "México - Tizayuca"
+    ],
+    "Puente Dovalí Jaime": [
+      "Puente Dovalí Jaime",
+      "Antonio Dovalí Jaime",
+      "Puente Antonio Dovalí Jaime"
+    ]
+  },
+  "knownSourceIssues": [
+    "México - Pachuca / México - Tizayuca lines erroneously have Jala concession name; use road nombre instead.",
+    "Jala selection excludes east-central México geometry erroneously assigned to that concession.",
+    "Road geometry update dates vary and mostly precede 2025.",
+    "Point-to-road checks are QA, not evidence that a reported accident occurred on a different road."
+  ],
+  "roads": 80,
+  "rawAccidents": 975,
+  "matchedWithin1000m": 889,
+  "missingGeometryRoads": [
+    "Puente Dovalí Jaime"
+  ]
+}

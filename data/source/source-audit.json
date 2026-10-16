@@ -1,0 +1,2447 @@
+{
+  "metadata": {
+    "schemaVersion": 1,
+    "title": "Piloto de registros de accidentes en autopistas de cuota",
+    "source": "GeoPlataforma SICT / Instituto Mexicano del Transporte",
+    "sourceViewerUrl": "https://rnc.imt.mx/geossi/",
+    "sourceCodeUrl": "https://rnc.imt.mx/geossi/recursos/ol3.js",
+    "sources": [
+      {
+        "layer": "accidentes30jun6jul2025datos",
+        "periodId": "2025-06-30_2025-07-06",
+        "url": "https://rnc.imt.mx/geoserver/GEOSSI/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=GEOSSI%3Aaccidentes30jun6jul2025datos&outputFormat=application%2Fjson",
+        "rawFile": "accidentes30jun6jul2025datos.raw.geojson",
+        "sha256": "5992ca1fcf8cc9f84fbc2a7b92fb880405a2f6b58fa67bda02ead941464ff9cc",
+        "serverTimestamp": "2026-10-16T18:42:11.058Z",
+        "rawCount": 470,
+        "advertisedCount": 470,
+        "crs": {
+          "type": "name",
+          "properties": {
+            "name": "urn:ogc:def:crs:EPSG::4326"
+          }
+        }
+      },
+      {
+        "layer": "accidentes7_13jul2025datos",
+        "periodId": "2025-07-07_2025-07-13",
+        "url": "https://rnc.imt.mx/geoserver/GEOSSI/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=GEOSSI%3Aaccidentes7_13jul2025datos&outputFormat=application%2Fjson",
+        "rawFile": "accidentes7_13jul2025datos.raw.geojson",
+        "sha256": "8dc60b6c793879cd53db70fb0895f9c444dd6baa69b92762a4d98cff4b568bff",
+        "serverTimestamp": "2026-10-16T18:42:11.364Z",
+        "rawCount": 505,
+        "advertisedCount": 505,
+        "crs": {
+          "type": "name",
+          "properties": {
+            "name": "urn:ogc:def:crs:EPSG::4326"
+          }
+        }
+      }
+    ],
+    "coverage": "Dos capas semanales publicadas para red de cuota; no representa todos los siniestros ni toda la red carretera de México.",
+    "recordGrain": "Un feature del servicio WFS; conteos de registros publicados, sin deduplicación confirmada de eventos.",
+    "rawCount": 975,
+    "mainCount": 965,
+    "temporalCount": 965,
+    "roadNameCount": 81,
+    "bounds": [
+      -117.11944993,
+      16.69074314,
+      -87.42839821,
+      32.58433805
+    ],
+    "densityCount": 879,
+    "roadAlignment": {
+      "file": "road-alignment-checks.json",
+      "sha256": "89d57cb99460e2599046b3a301e7b0cec1ebcc79c2d513815dee00c1b80ac7bb",
+      "thresholdMeters": 1000,
+      "method": "Distancia mínima del punto publicado al trazo oficial de la autopista con el mismo nombre. Umbral de elegibilidad para dibujar densidad; no corrige posición ni demuestra que la fuente esté equivocada. Geometría vial de otra fecha puede contribuir a la discrepancia."
+    },
+    "dateMethod": "Conversión inferida de serial Excel 1900 (base contemporánea 1899-12-30). Se conservan fecha raw y fecha derivada. Los registros fuera de la semana anunciada se excluyen mediante mainEligible=false; no se corrigen ni trasladan de periodo.",
+    "hourMethod": "Interpretación inferida, no confirmada por diccionario GeoSSI: hora como fracción de día, hora aproximada=(horaRaw mod 1)*24 y minuto aproximado=round((horaRaw mod 1)*1440). Todos los valores publicados tienen como máximo dos decimales: paso observado 0.01 día=14.4 minutos. No se recuperan minutos exactos ni se supone zona horaria. Hora raw=1 se representa como medianoche aproximada con flag de frontera ambigua, sin cambiar la fecha.",
+    "hourPrecision": "Aproximada; resolución observada de 14.4 minutos, método de redondeo upstream desconocido.",
+    "dateHourEncodingStatus": "inferred_from_values_not_confirmed_by_layer_documentation",
+    "excelConventionReferenceUrl": "https://support.microsoft.com/en-gb/excel/change-the-date-system-format-or-two-digit-year-interpretation",
+    "geometryMethod": "Se conserva únicamente la geometría Point EPSG:4326 publicada; no se reconstruye desde las cadenas textuales latitud/longitud, que incluyen ceros y formatos heterogéneos. La posición no se interpreta como medición GPS verificada.",
+    "duplicateMethod": "Se marcan coincidencias en autopista, sentido, km, fecha, hora, tipo, causa, vehículo, lesionados y decesos. No se elimina ninguna: faltan identificadores de evento confirmados y hay coincidencias con geometrías distantes.",
+    "chainageMethod": "El valor id de propiedades coincide con km*1000 en la gran mayoría de filas; discrepancias se marcan como prueba auxiliar de consistencia, sin corregir kilometraje ni coordenadas y sin asumir que id sea clave de evento.",
+    "displayGuidance": "Usar mainEligible para registros dentro del periodo y densityEligible para barras sobre autopistas cuando la auditoría de alineación esté presente. Diferenciar registros totales del periodo y registros alineados usados en barras. Etiquetar conteos como registros y horas como aproximadas. Las densidades son conteos, no riesgo ajustado por tránsito.",
+    "refreshCommand": "python3 scripts/prepare-data.py --download",
+    "reproduceCommand": "python3 scripts/prepare-data.py"
+  },
+  "periods": [
+    {
+      "id": "2025-06-30_2025-07-06",
+      "label": "30 jun – 6 jul 2025",
+      "start": "2025-06-30",
+      "end": "2025-07-06",
+      "layer": "accidentes30jun6jul2025datos",
+      "rawCount": 470,
+      "mainCount": 461,
+      "temporalCount": 461,
+      "densityCount": 424,
+      "outsidePeriodCount": 9
+    },
+    {
+      "id": "2025-07-07_2025-07-13",
+      "label": "7 – 13 jul 2025",
+      "start": "2025-07-07",
+      "end": "2025-07-13",
+      "layer": "accidentes7_13jul2025datos",
+      "rawCount": 505,
+      "mainCount": 504,
+      "temporalCount": 504,
+      "densityCount": 455,
+      "outsidePeriodCount": 1
+    }
+  ],
+  "byRoad": [
+    {
+      "name": "Acatzingo - Cd. Mendoza",
+      "key": "acatzingo-cd-mendoza",
+      "rawCount": 20,
+      "mainCount": 20,
+      "temporalCount": 20,
+      "densityCount": 20,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 9,
+          "mainCount": 9,
+          "densityCount": 9
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 11,
+          "mainCount": 11,
+          "densityCount": 11
+        }
+      ]
+    },
+    {
+      "name": "Agua Dulce - Cárdenas",
+      "key": "agua-dulce-cardenas",
+      "rawCount": 4,
+      "mainCount": 4,
+      "temporalCount": 4,
+      "densityCount": 4,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 1,
+          "mainCount": 1,
+          "densityCount": 1
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 3,
+          "mainCount": 3,
+          "densityCount": 3
+        }
+      ]
+    },
+    {
+      "name": "Amozoc - Perote y Lib. De Perote",
+      "key": "amozoc-perote-y-lib-de-perote",
+      "rawCount": 12,
+      "mainCount": 12,
+      "temporalCount": 12,
+      "densityCount": 12,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 7,
+          "mainCount": 7,
+          "densityCount": 7
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 5,
+          "mainCount": 5,
+          "densityCount": 5
+        }
+      ]
+    },
+    {
+      "name": "Armería - Manzanillo",
+      "key": "armeria-manzanillo",
+      "rawCount": 16,
+      "mainCount": 15,
+      "temporalCount": 15,
+      "densityCount": 15,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 9,
+          "mainCount": 8,
+          "densityCount": 8
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 7,
+          "mainCount": 7,
+          "densityCount": 7
+        }
+      ]
+    },
+    {
+      "name": "Arriaga - Ocozocoautla",
+      "key": "arriaga-ocozocoautla",
+      "rawCount": 1,
+      "mainCount": 1,
+      "temporalCount": 1,
+      "densityCount": 1,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 1,
+          "mainCount": 1,
+          "densityCount": 1
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 0,
+          "mainCount": 0,
+          "densityCount": 0
+        }
+      ]
+    },
+    {
+      "name": "Atlacomulco - Maravatío",
+      "key": "atlacomulco-maravatio",
+      "rawCount": 38,
+      "mainCount": 38,
+      "temporalCount": 38,
+      "densityCount": 38,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 17,
+          "mainCount": 17,
+          "densityCount": 17
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 21,
+          "mainCount": 21,
+          "densityCount": 21
+        }
+      ]
+    },
+    {
+      "name": "Cadereyta - Reynosa",
+      "key": "cadereyta-reynosa",
+      "rawCount": 12,
+      "mainCount": 11,
+      "temporalCount": 11,
+      "densityCount": 11,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 5,
+          "mainCount": 5,
+          "densityCount": 5
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 7,
+          "mainCount": 6,
+          "densityCount": 6
+        }
+      ]
+    },
+    {
+      "name": "Camargo - Delicias",
+      "key": "camargo-delicias",
+      "rawCount": 2,
+      "mainCount": 2,
+      "temporalCount": 2,
+      "densityCount": 2,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 0,
+          "mainCount": 0,
+          "densityCount": 0
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 2,
+          "mainCount": 2,
+          "densityCount": 2
+        }
+      ]
+    },
+    {
+      "name": "Cardel - Poza Rica",
+      "key": "cardel-poza-rica",
+      "rawCount": 3,
+      "mainCount": 3,
+      "temporalCount": 3,
+      "densityCount": 3,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 0,
+          "mainCount": 0,
+          "densityCount": 0
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 3,
+          "mainCount": 3,
+          "densityCount": 3
+        }
+      ]
+    },
+    {
+      "name": "Cardel - Veracruz",
+      "key": "cardel-veracruz",
+      "rawCount": 1,
+      "mainCount": 1,
+      "temporalCount": 1,
+      "densityCount": 1,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 0,
+          "mainCount": 0,
+          "densityCount": 0
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 1,
+          "mainCount": 1,
+          "densityCount": 1
+        }
+      ]
+    },
+    {
+      "name": "Cd. Mendoza - Córdoba",
+      "key": "cd-mendoza-cordoba",
+      "rawCount": 9,
+      "mainCount": 9,
+      "temporalCount": 9,
+      "densityCount": 9,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 3,
+          "mainCount": 3,
+          "densityCount": 3
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 6,
+          "mainCount": 6,
+          "densityCount": 6
+        }
+      ]
+    },
+    {
+      "name": "Cd. Valles - Tamuín",
+      "key": "cd-valles-tamuin",
+      "rawCount": 2,
+      "mainCount": 2,
+      "temporalCount": 2,
+      "densityCount": 0,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 0,
+          "mainCount": 0,
+          "densityCount": 0
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 2,
+          "mainCount": 2,
+          "densityCount": 0
+        }
+      ]
+    },
+    {
+      "name": "Cedral - Playa del Cármen",
+      "key": "cedral-playa-del-carmen",
+      "rawCount": 15,
+      "mainCount": 15,
+      "temporalCount": 15,
+      "densityCount": 2,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 7,
+          "mainCount": 7,
+          "densityCount": 0
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 8,
+          "mainCount": 8,
+          "densityCount": 2
+        }
+      ]
+    },
+    {
+      "name": "Chamapa - Lechería",
+      "key": "chamapa-lecheria",
+      "rawCount": 16,
+      "mainCount": 16,
+      "temporalCount": 16,
+      "densityCount": 16,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 12,
+          "mainCount": 12,
+          "densityCount": 12
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 4,
+          "mainCount": 4,
+          "densityCount": 4
+        }
+      ]
+    },
+    {
+      "name": "Champotón - Campeche",
+      "key": "champoton-campeche",
+      "rawCount": 1,
+      "mainCount": 1,
+      "temporalCount": 1,
+      "densityCount": 1,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 0,
+          "mainCount": 0,
+          "densityCount": 0
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 1,
+          "mainCount": 1,
+          "densityCount": 1
+        }
+      ]
+    },
+    {
+      "name": "Chapalilla - Compostela",
+      "key": "chapalilla-compostela",
+      "rawCount": 3,
+      "mainCount": 3,
+      "temporalCount": 3,
+      "densityCount": 3,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 2,
+          "mainCount": 2,
+          "densityCount": 2
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 1,
+          "mainCount": 1,
+          "densityCount": 1
+        }
+      ]
+    },
+    {
+      "name": "Cuacnopalan - Oaxaca",
+      "key": "cuacnopalan-oaxaca",
+      "rawCount": 22,
+      "mainCount": 22,
+      "temporalCount": 22,
+      "densityCount": 22,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 7,
+          "mainCount": 7,
+          "densityCount": 7
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 15,
+          "mainCount": 15,
+          "densityCount": 15
+        }
+      ]
+    },
+    {
+      "name": "Cuernavaca - Acapulco",
+      "key": "cuernavaca-acapulco",
+      "rawCount": 36,
+      "mainCount": 36,
+      "temporalCount": 36,
+      "densityCount": 36,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 13,
+          "mainCount": 13,
+          "densityCount": 13
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 23,
+          "mainCount": 23,
+          "densityCount": 23
+        }
+      ]
+    },
+    {
+      "name": "Córdoba - Veracruz",
+      "key": "cordoba-veracruz",
+      "rawCount": 22,
+      "mainCount": 22,
+      "temporalCount": 22,
+      "densityCount": 22,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 8,
+          "mainCount": 8,
+          "densityCount": 8
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 14,
+          "mainCount": 14,
+          "densityCount": 14
+        }
+      ]
+    },
+    {
+      "name": "Durango - Mazatlán",
+      "key": "durango-mazatlan",
+      "rawCount": 13,
+      "mainCount": 13,
+      "temporalCount": 13,
+      "densityCount": 3,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 5,
+          "mainCount": 5,
+          "densityCount": 1
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 8,
+          "mainCount": 8,
+          "densityCount": 2
+        }
+      ]
+    },
+    {
+      "name": "Durango - Yerbanis",
+      "key": "durango-yerbanis",
+      "rawCount": 2,
+      "mainCount": 2,
+      "temporalCount": 2,
+      "densityCount": 2,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 0,
+          "mainCount": 0,
+          "densityCount": 0
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 2,
+          "mainCount": 2,
+          "densityCount": 2
+        }
+      ]
+    },
+    {
+      "name": "Durango - Yerbanís",
+      "key": "durango-yerbanis",
+      "rawCount": 2,
+      "mainCount": 2,
+      "temporalCount": 2,
+      "densityCount": 2,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 2,
+          "mainCount": 2,
+          "densityCount": 2
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 0,
+          "mainCount": 0,
+          "densityCount": 0
+        }
+      ]
+    },
+    {
+      "name": "Ecatepec - Pirámides",
+      "key": "ecatepec-piramides",
+      "rawCount": 5,
+      "mainCount": 5,
+      "temporalCount": 5,
+      "densityCount": 5,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 3,
+          "mainCount": 3,
+          "densityCount": 3
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 2,
+          "mainCount": 2,
+          "densityCount": 2
+        }
+      ]
+    },
+    {
+      "name": "El Centinela - La Rumorosa",
+      "key": "el-centinela-la-rumorosa",
+      "rawCount": 15,
+      "mainCount": 15,
+      "temporalCount": 15,
+      "densityCount": 14,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 8,
+          "mainCount": 8,
+          "densityCount": 8
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 7,
+          "mainCount": 7,
+          "densityCount": 6
+        }
+      ]
+    },
+    {
+      "name": "Ensenada - Tijuana",
+      "key": "ensenada-tijuana",
+      "rawCount": 20,
+      "mainCount": 20,
+      "temporalCount": 20,
+      "densityCount": 20,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 11,
+          "mainCount": 11,
+          "densityCount": 11
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 9,
+          "mainCount": 9,
+          "densityCount": 9
+        }
+      ]
+    },
+    {
+      "name": "Ent. Tulancingo - Nuevo Necaxa",
+      "key": "ent-tulancingo-nuevo-necaxa",
+      "rawCount": 23,
+      "mainCount": 23,
+      "temporalCount": 23,
+      "densityCount": 23,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 13,
+          "mainCount": 13,
+          "densityCount": 13
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 10,
+          "mainCount": 10,
+          "densityCount": 10
+        }
+      ]
+    },
+    {
+      "name": "Estación Don - Nogales",
+      "key": "estacion-don-nogales",
+      "rawCount": 40,
+      "mainCount": 40,
+      "temporalCount": 40,
+      "densityCount": 21,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 22,
+          "mainCount": 22,
+          "densityCount": 12
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 18,
+          "mainCount": 18,
+          "densityCount": 9
+        }
+      ]
+    },
+    {
+      "name": "Guadalajara - Colima",
+      "key": "guadalajara-colima",
+      "rawCount": 10,
+      "mainCount": 10,
+      "temporalCount": 10,
+      "densityCount": 10,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 4,
+          "mainCount": 4,
+          "densityCount": 4
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 6,
+          "mainCount": 6,
+          "densityCount": 6
+        }
+      ]
+    },
+    {
+      "name": "Guadalajara - Tepic",
+      "key": "guadalajara-tepic",
+      "rawCount": 3,
+      "mainCount": 3,
+      "temporalCount": 3,
+      "densityCount": 3,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 3,
+          "mainCount": 3,
+          "densityCount": 3
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 0,
+          "mainCount": 0,
+          "densityCount": 0
+        }
+      ]
+    },
+    {
+      "name": "Gutiérrez Zamora - Tihuatlán",
+      "key": "gutierrez-zamora-tihuatlan",
+      "rawCount": 1,
+      "mainCount": 1,
+      "temporalCount": 1,
+      "densityCount": 1,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 0,
+          "mainCount": 0,
+          "densityCount": 0
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 1,
+          "mainCount": 1,
+          "densityCount": 1
+        }
+      ]
+    },
+    {
+      "name": "Gómez Palacio - Corralitos",
+      "key": "gomez-palacio-corralitos",
+      "rawCount": 2,
+      "mainCount": 2,
+      "temporalCount": 2,
+      "densityCount": 2,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 1,
+          "mainCount": 1,
+          "densityCount": 1
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 1,
+          "mainCount": 1,
+          "densityCount": 1
+        }
+      ]
+    },
+    {
+      "name": "Jala - Compostela",
+      "key": "jala-compostela",
+      "rawCount": 15,
+      "mainCount": 15,
+      "temporalCount": 15,
+      "densityCount": 15,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 6,
+          "mainCount": 6,
+          "densityCount": 6
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 9,
+          "mainCount": 9,
+          "densityCount": 9
+        }
+      ]
+    },
+    {
+      "name": "Jantetelco - El Higuerón",
+      "key": "jantetelco-el-higueron",
+      "rawCount": 1,
+      "mainCount": 1,
+      "temporalCount": 1,
+      "densityCount": 1,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 0,
+          "mainCount": 0,
+          "densityCount": 0
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 1,
+          "mainCount": 1,
+          "densityCount": 1
+        }
+      ]
+    },
+    {
+      "name": "La Marquesa - Lerma",
+      "key": "la-marquesa-lerma",
+      "rawCount": 2,
+      "mainCount": 2,
+      "temporalCount": 2,
+      "densityCount": 2,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 2,
+          "mainCount": 2,
+          "densityCount": 2
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 0,
+          "mainCount": 0,
+          "densityCount": 0
+        }
+      ]
+    },
+    {
+      "name": "La Pera - Cuautla",
+      "key": "la-pera-cuautla",
+      "rawCount": 7,
+      "mainCount": 7,
+      "temporalCount": 7,
+      "densityCount": 7,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 2,
+          "mainCount": 2,
+          "densityCount": 2
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 5,
+          "mainCount": 5,
+          "densityCount": 5
+        }
+      ]
+    },
+    {
+      "name": "La Rumorosa - Tecate",
+      "key": "la-rumorosa-tecate",
+      "rawCount": 8,
+      "mainCount": 8,
+      "temporalCount": 8,
+      "densityCount": 8,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 6,
+          "mainCount": 6,
+          "densityCount": 6
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 2,
+          "mainCount": 2,
+          "densityCount": 2
+        }
+      ]
+    },
+    {
+      "name": "La Tinaja - Cosoleacaque",
+      "key": "la-tinaja-cosoleacaque",
+      "rawCount": 34,
+      "mainCount": 34,
+      "temporalCount": 34,
+      "densityCount": 34,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 16,
+          "mainCount": 16,
+          "densityCount": 16
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 18,
+          "mainCount": 18,
+          "densityCount": 18
+        }
+      ]
+    },
+    {
+      "name": "Lagos de Moreno - San Luis Potosí (Villa de Arriaga",
+      "key": "lagos-de-moreno-san-luis-potosi-villa-de-arriaga",
+      "rawCount": 4,
+      "mainCount": 4,
+      "temporalCount": 4,
+      "densityCount": 2,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 1,
+          "mainCount": 1,
+          "densityCount": 1
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 3,
+          "mainCount": 3,
+          "densityCount": 1
+        }
+      ]
+    },
+    {
+      "name": "Las Choapas - Ocozocoautla",
+      "key": "las-choapas-ocozocoautla",
+      "rawCount": 11,
+      "mainCount": 11,
+      "temporalCount": 11,
+      "densityCount": 11,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 3,
+          "mainCount": 3,
+          "densityCount": 3
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 8,
+          "mainCount": 8,
+          "densityCount": 8
+        }
+      ]
+    },
+    {
+      "name": "Libramiento Amecameca - Nepantla",
+      "key": "libramiento-amecameca-nepantla",
+      "rawCount": 4,
+      "mainCount": 4,
+      "temporalCount": 4,
+      "densityCount": 4,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 0,
+          "mainCount": 0,
+          "densityCount": 0
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 4,
+          "mainCount": 4,
+          "densityCount": 4
+        }
+      ]
+    },
+    {
+      "name": "Libramiento Nororiente de Querétaro",
+      "key": "libramiento-nororiente-de-queretaro",
+      "rawCount": 20,
+      "mainCount": 20,
+      "temporalCount": 20,
+      "densityCount": 19,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 6,
+          "mainCount": 6,
+          "densityCount": 6
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 14,
+          "mainCount": 14,
+          "densityCount": 13
+        }
+      ]
+    },
+    {
+      "name": "Libramiento Norte de San Luis Potosí (Tramo I)",
+      "key": "libramiento-norte-de-san-luis-potosi-tramo-i",
+      "rawCount": 1,
+      "mainCount": 1,
+      "temporalCount": 1,
+      "densityCount": 0,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 1,
+          "mainCount": 1,
+          "densityCount": 0
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 0,
+          "mainCount": 0,
+          "densityCount": 0
+        }
+      ]
+    },
+    {
+      "name": "Libramiento Norte de la Ciudad de México",
+      "key": "libramiento-norte-de-la-ciudad-de-mexico",
+      "rawCount": 4,
+      "mainCount": 4,
+      "temporalCount": 4,
+      "densityCount": 4,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 3,
+          "mainCount": 3,
+          "densityCount": 3
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 1,
+          "mainCount": 1,
+          "densityCount": 1
+        }
+      ]
+    },
+    {
+      "name": "Libramiento Norte de la Laguna",
+      "key": "libramiento-norte-de-la-laguna",
+      "rawCount": 2,
+      "mainCount": 2,
+      "temporalCount": 2,
+      "densityCount": 2,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 1,
+          "mainCount": 1,
+          "densityCount": 1
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 1,
+          "mainCount": 1,
+          "densityCount": 1
+        }
+      ]
+    },
+    {
+      "name": "Libramiento Oriente de Saltillo",
+      "key": "libramiento-oriente-de-saltillo",
+      "rawCount": 6,
+      "mainCount": 6,
+      "temporalCount": 6,
+      "densityCount": 5,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 4,
+          "mainCount": 4,
+          "densityCount": 4
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 2,
+          "mainCount": 2,
+          "densityCount": 1
+        }
+      ]
+    },
+    {
+      "name": "Libramiento Oriente de San Luis Potosí",
+      "key": "libramiento-oriente-de-san-luis-potosi",
+      "rawCount": 3,
+      "mainCount": 3,
+      "temporalCount": 3,
+      "densityCount": 3,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 1,
+          "mainCount": 1,
+          "densityCount": 1
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 2,
+          "mainCount": 2,
+          "densityCount": 2
+        }
+      ]
+    },
+    {
+      "name": "Libramiento Poniente de Acapulco",
+      "key": "libramiento-poniente-de-acapulco",
+      "rawCount": 2,
+      "mainCount": 2,
+      "temporalCount": 2,
+      "densityCount": 0,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 1,
+          "mainCount": 1,
+          "densityCount": 0
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 1,
+          "mainCount": 1,
+          "densityCount": 0
+        }
+      ]
+    },
+    {
+      "name": "Libramiento Poniente de Tampico",
+      "key": "libramiento-poniente-de-tampico",
+      "rawCount": 1,
+      "mainCount": 1,
+      "temporalCount": 1,
+      "densityCount": 1,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 0,
+          "mainCount": 0,
+          "densityCount": 0
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 1,
+          "mainCount": 1,
+          "densityCount": 1
+        }
+      ]
+    },
+    {
+      "name": "Libramiento Sur II de Reynosa",
+      "key": "libramiento-sur-ii-de-reynosa",
+      "rawCount": 3,
+      "mainCount": 3,
+      "temporalCount": 3,
+      "densityCount": 3,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 0,
+          "mainCount": 0,
+          "densityCount": 0
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 3,
+          "mainCount": 3,
+          "densityCount": 3
+        }
+      ]
+    },
+    {
+      "name": "Libramiento Sur de Guadalajara",
+      "key": "libramiento-sur-de-guadalajara",
+      "rawCount": 1,
+      "mainCount": 0,
+      "temporalCount": 0,
+      "densityCount": 0,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 1,
+          "mainCount": 0,
+          "densityCount": 0
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 0,
+          "mainCount": 0,
+          "densityCount": 0
+        }
+      ]
+    },
+    {
+      "name": "Libramiento de Cd. Obregón",
+      "key": "libramiento-de-cd-obregon",
+      "rawCount": 1,
+      "mainCount": 1,
+      "temporalCount": 1,
+      "densityCount": 1,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 0,
+          "mainCount": 0,
+          "densityCount": 0
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 1,
+          "mainCount": 1,
+          "densityCount": 1
+        }
+      ]
+    },
+    {
+      "name": "Libramiento de Chihuahua",
+      "key": "libramiento-de-chihuahua",
+      "rawCount": 5,
+      "mainCount": 5,
+      "temporalCount": 5,
+      "densityCount": 5,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 3,
+          "mainCount": 3,
+          "densityCount": 3
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 2,
+          "mainCount": 2,
+          "densityCount": 2
+        }
+      ]
+    },
+    {
+      "name": "Libramiento de Cuernavaca",
+      "key": "libramiento-de-cuernavaca",
+      "rawCount": 15,
+      "mainCount": 15,
+      "temporalCount": 15,
+      "densityCount": 14,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 8,
+          "mainCount": 8,
+          "densityCount": 8
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 7,
+          "mainCount": 7,
+          "densityCount": 6
+        }
+      ]
+    },
+    {
+      "name": "Libramiento de Villahermosa",
+      "key": "libramiento-de-villahermosa",
+      "rawCount": 1,
+      "mainCount": 1,
+      "temporalCount": 1,
+      "densityCount": 0,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 1,
+          "mainCount": 1,
+          "densityCount": 0
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 0,
+          "mainCount": 0,
+          "densityCount": 0
+        }
+      ]
+    },
+    {
+      "name": "Mazatlán - Culiacán",
+      "key": "mazatlan-culiacan",
+      "rawCount": 1,
+      "mainCount": 1,
+      "temporalCount": 1,
+      "densityCount": 0,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 0,
+          "mainCount": 0,
+          "densityCount": 0
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 1,
+          "mainCount": 1,
+          "densityCount": 0
+        }
+      ]
+    },
+    {
+      "name": "Monterrey - Nuevo Laredo",
+      "key": "monterrey-nuevo-laredo",
+      "rawCount": 9,
+      "mainCount": 9,
+      "temporalCount": 9,
+      "densityCount": 9,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 2,
+          "mainCount": 2,
+          "densityCount": 2
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 7,
+          "mainCount": 7,
+          "densityCount": 7
+        }
+      ]
+    },
+    {
+      "name": "México - Cuernavaca",
+      "key": "mexico-cuernavaca",
+      "rawCount": 53,
+      "mainCount": 53,
+      "temporalCount": 53,
+      "densityCount": 50,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 24,
+          "mainCount": 24,
+          "densityCount": 24
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 29,
+          "mainCount": 29,
+          "densityCount": 26
+        }
+      ]
+    },
+    {
+      "name": "México - La Marquesa",
+      "key": "mexico-la-marquesa",
+      "rawCount": 5,
+      "mainCount": 5,
+      "temporalCount": 5,
+      "densityCount": 5,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 3,
+          "mainCount": 3,
+          "densityCount": 3
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 2,
+          "mainCount": 2,
+          "densityCount": 2
+        }
+      ]
+    },
+    {
+      "name": "México - Pachuca",
+      "key": "mexico-pachuca",
+      "rawCount": 68,
+      "mainCount": 68,
+      "temporalCount": 68,
+      "densityCount": 68,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 32,
+          "mainCount": 32,
+          "densityCount": 32
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 36,
+          "mainCount": 36,
+          "densityCount": 36
+        }
+      ]
+    },
+    {
+      "name": "México - Puebla",
+      "key": "mexico-puebla",
+      "rawCount": 57,
+      "mainCount": 57,
+      "temporalCount": 57,
+      "densityCount": 57,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 32,
+          "mainCount": 32,
+          "densityCount": 32
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 25,
+          "mainCount": 25,
+          "densityCount": 25
+        }
+      ]
+    },
+    {
+      "name": "México - Querétaro",
+      "key": "mexico-queretaro",
+      "rawCount": 101,
+      "mainCount": 101,
+      "temporalCount": 101,
+      "densityCount": 80,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 56,
+          "mainCount": 56,
+          "densityCount": 45
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 45,
+          "mainCount": 45,
+          "densityCount": 35
+        }
+      ]
+    },
+    {
+      "name": "Nuevo Necaxa - Tihuatlán (PPS)",
+      "key": "nuevo-necaxa-tihuatlan-pps",
+      "rawCount": 13,
+      "mainCount": 12,
+      "temporalCount": 12,
+      "densityCount": 12,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 7,
+          "mainCount": 6,
+          "densityCount": 6
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 6,
+          "mainCount": 6,
+          "densityCount": 6
+        }
+      ]
+    },
+    {
+      "name": "Perote - Banderilla y Lib. De Xalapa",
+      "key": "perote-banderilla-y-lib-de-xalapa",
+      "rawCount": 15,
+      "mainCount": 9,
+      "temporalCount": 9,
+      "densityCount": 9,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 11,
+          "mainCount": 5,
+          "densityCount": 5
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 4,
+          "mainCount": 4,
+          "densityCount": 4
+        }
+      ]
+    },
+    {
+      "name": "Peñón - Texcoco",
+      "key": "penon-texcoco",
+      "rawCount": 3,
+      "mainCount": 3,
+      "temporalCount": 3,
+      "densityCount": 3,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 1,
+          "mainCount": 1,
+          "densityCount": 1
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 2,
+          "mainCount": 2,
+          "densityCount": 2
+        }
+      ]
+    },
+    {
+      "name": "Puebla - Acatzingo",
+      "key": "puebla-acatzingo",
+      "rawCount": 18,
+      "mainCount": 18,
+      "temporalCount": 18,
+      "densityCount": 18,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 11,
+          "mainCount": 11,
+          "densityCount": 11
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 7,
+          "mainCount": 7,
+          "densityCount": 7
+        }
+      ]
+    },
+    {
+      "name": "Puente Dovalí Jaime",
+      "key": "puente-dovali-jaime",
+      "rawCount": 2,
+      "mainCount": 2,
+      "temporalCount": 2,
+      "densityCount": 0,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 0,
+          "mainCount": 0,
+          "densityCount": 0
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 2,
+          "mainCount": 2,
+          "densityCount": 0
+        }
+      ]
+    },
+    {
+      "name": "Puente de Ixtla - Iguala",
+      "key": "puente-de-ixtla-iguala",
+      "rawCount": 16,
+      "mainCount": 16,
+      "temporalCount": 16,
+      "densityCount": 15,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 5,
+          "mainCount": 5,
+          "densityCount": 5
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 11,
+          "mainCount": 11,
+          "densityCount": 10
+        }
+      ]
+    },
+    {
+      "name": "Puerto México - La Carbonera",
+      "key": "puerto-mexico-la-carbonera",
+      "rawCount": 19,
+      "mainCount": 19,
+      "temporalCount": 19,
+      "densityCount": 18,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 12,
+          "mainCount": 12,
+          "densityCount": 11
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 7,
+          "mainCount": 7,
+          "densityCount": 7
+        }
+      ]
+    },
+    {
+      "name": "Pátzcuaro - Uruapan",
+      "key": "patzcuaro-uruapan",
+      "rawCount": 1,
+      "mainCount": 1,
+      "temporalCount": 1,
+      "densityCount": 1,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 0,
+          "mainCount": 0,
+          "densityCount": 0
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 1,
+          "mainCount": 1,
+          "densityCount": 1
+        }
+      ]
+    },
+    {
+      "name": "Querétaro - Irapuato",
+      "key": "queretaro-irapuato",
+      "rawCount": 30,
+      "mainCount": 30,
+      "temporalCount": 30,
+      "densityCount": 29,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 14,
+          "mainCount": 14,
+          "densityCount": 14
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 16,
+          "mainCount": 16,
+          "densityCount": 15
+        }
+      ]
+    },
+    {
+      "name": "Reynosa - Matamoros",
+      "key": "reynosa-matamoros",
+      "rawCount": 9,
+      "mainCount": 9,
+      "temporalCount": 9,
+      "densityCount": 9,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 4,
+          "mainCount": 4,
+          "densityCount": 4
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 5,
+          "mainCount": 5,
+          "densityCount": 5
+        }
+      ]
+    },
+    {
+      "name": "San José del Cabo - Cabo San Lucas (Lib. Los Cabos)",
+      "key": "san-jose-del-cabo-cabo-san-lucas-lib-los-cabos",
+      "rawCount": 4,
+      "mainCount": 4,
+      "temporalCount": 4,
+      "densityCount": 4,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 2,
+          "mainCount": 2,
+          "densityCount": 2
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 2,
+          "mainCount": 2,
+          "densityCount": 2
+        }
+      ]
+    },
+    {
+      "name": "Santa Ana - Altar",
+      "key": "santa-ana-altar",
+      "rawCount": 1,
+      "mainCount": 1,
+      "temporalCount": 1,
+      "densityCount": 1,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 1,
+          "mainCount": 1,
+          "densityCount": 1
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 0,
+          "mainCount": 0,
+          "densityCount": 0
+        }
+      ]
+    },
+    {
+      "name": "Tecate - Tijuana",
+      "key": "tecate-tijuana",
+      "rawCount": 1,
+      "mainCount": 1,
+      "temporalCount": 1,
+      "densityCount": 1,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 0,
+          "mainCount": 0,
+          "densityCount": 0
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 1,
+          "mainCount": 1,
+          "densityCount": 1
+        }
+      ]
+    },
+    {
+      "name": "Tihuatlán - Tuxpan Puente Tuxpan",
+      "key": "tihuatlan-tuxpan-puente-tuxpan",
+      "rawCount": 5,
+      "mainCount": 5,
+      "temporalCount": 5,
+      "densityCount": 5,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 3,
+          "mainCount": 3,
+          "densityCount": 3
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 2,
+          "mainCount": 2,
+          "densityCount": 2
+        }
+      ]
+    },
+    {
+      "name": "Torreón - Saltillo",
+      "key": "torreon-saltillo",
+      "rawCount": 6,
+      "mainCount": 6,
+      "temporalCount": 6,
+      "densityCount": 6,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 2,
+          "mainCount": 2,
+          "densityCount": 2
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 4,
+          "mainCount": 4,
+          "densityCount": 4
+        }
+      ]
+    },
+    {
+      "name": "Tuxpan - Tampico (Ozuluama)",
+      "key": "tuxpan-tampico-ozuluama",
+      "rawCount": 4,
+      "mainCount": 4,
+      "temporalCount": 4,
+      "densityCount": 3,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 3,
+          "mainCount": 3,
+          "densityCount": 3
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 1,
+          "mainCount": 1,
+          "densityCount": 0
+        }
+      ]
+    },
+    {
+      "name": "Tuxtla Gutiérrez - San Cristobal",
+      "key": "tuxtla-gutierrez-san-cristobal",
+      "rawCount": 8,
+      "mainCount": 8,
+      "temporalCount": 8,
+      "densityCount": 7,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 5,
+          "mainCount": 5,
+          "densityCount": 4
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 3,
+          "mainCount": 3,
+          "densityCount": 3
+        }
+      ]
+    },
+    {
+      "name": "Ventura - Peyote",
+      "key": "ventura-peyote",
+      "rawCount": 1,
+      "mainCount": 1,
+      "temporalCount": 1,
+      "densityCount": 1,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 0,
+          "mainCount": 0,
+          "densityCount": 0
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 1,
+          "mainCount": 1,
+          "densityCount": 1
+        }
+      ]
+    },
+    {
+      "name": "Yerbanis - Gómez Palacio",
+      "key": "yerbanis-gomez-palacio",
+      "rawCount": 2,
+      "mainCount": 2,
+      "temporalCount": 2,
+      "densityCount": 2,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 0,
+          "mainCount": 0,
+          "densityCount": 0
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 2,
+          "mainCount": 2,
+          "densityCount": 2
+        }
+      ]
+    },
+    {
+      "name": "Zacapalco - Rancho Viejo",
+      "key": "zacapalco-rancho-viejo",
+      "rawCount": 1,
+      "mainCount": 1,
+      "temporalCount": 1,
+      "densityCount": 1,
+      "periods": [
+        {
+          "periodId": "2025-06-30_2025-07-06",
+          "rawCount": 1,
+          "mainCount": 1,
+          "densityCount": 1
+        },
+        {
+          "periodId": "2025-07-07_2025-07-13",
+          "rawCount": 0,
+          "mainCount": 0,
+          "densityCount": 0
+        }
+      ]
+    }
+  ],
+  "checks": {
+    "downloadComplete": true,
+    "featureIdsUnique": true,
+    "rawCount": 975,
+    "geometryValidCount": 975,
+    "geometryBounds": [
+      -117.11944993,
+      16.69074314,
+      -87.42839821,
+      32.58433805
+    ],
+    "flagCounts": {
+      "accident_type_missing": 1,
+      "cause_missing_or_unspecified": 634,
+      "chainage_auxiliary_id_mismatch": 26,
+      "chainage_short_or_malformed_suffix": 1,
+      "date_outside_source_period": 10,
+      "hour_midnight_boundary_ambiguous": 6,
+      "possible_duplicate_attributes": 16,
+      "road_alignment_gt_1000m": 84,
+      "road_geometry_unavailable_for_alignment": 2
+    },
+    "hourRawMin": 0,
+    "hourRawMax": 1,
+    "hourRawDistinctCount": 101,
+    "hourRawDecimalPlacesAtMost2": true,
+    "dateCounts": {
+      "2002-07-02": 1,
+      "2005-07-09": 1,
+      "2025-04-05": 1,
+      "2025-06-23": 1,
+      "2025-06-25": 4,
+      "2025-06-26": 1,
+      "2025-06-30": 63,
+      "2025-07-01": 67,
+      "2025-07-02": 66,
+      "2025-07-03": 48,
+      "2025-07-04": 79,
+      "2025-07-05": 72,
+      "2025-07-06": 66,
+      "2025-07-07": 63,
+      "2025-07-08": 55,
+      "2025-07-09": 73,
+      "2025-07-10": 62,
+      "2025-07-11": 102,
+      "2025-07-12": 68,
+      "2025-07-13": 81,
+      "2028-07-05": 1
+    },
+    "causeZeroCodeCount": 629,
+    "duplicateCandidateGroups": [
+      {
+        "id": "candidate-1",
+        "recordIds": [
+          "accidentes30jun6jul2025datos.70",
+          "accidentes30jun6jul2025datos.71"
+        ],
+        "maxGeometrySeparationMeters": 0.37,
+        "removed": false
+      },
+      {
+        "id": "candidate-2",
+        "recordIds": [
+          "accidentes30jun6jul2025datos.86",
+          "accidentes30jun6jul2025datos.87"
+        ],
+        "maxGeometrySeparationMeters": 9815.73,
+        "removed": false
+      },
+      {
+        "id": "candidate-3",
+        "recordIds": [
+          "accidentes30jun6jul2025datos.157",
+          "accidentes30jun6jul2025datos.167"
+        ],
+        "maxGeometrySeparationMeters": 815547.6,
+        "removed": false
+      },
+      {
+        "id": "candidate-4",
+        "recordIds": [
+          "accidentes30jun6jul2025datos.278",
+          "accidentes30jun6jul2025datos.288"
+        ],
+        "maxGeometrySeparationMeters": 0.01,
+        "removed": false
+      },
+      {
+        "id": "candidate-5",
+        "recordIds": [
+          "accidentes30jun6jul2025datos.395",
+          "accidentes30jun6jul2025datos.396"
+        ],
+        "maxGeometrySeparationMeters": 0.01,
+        "removed": false
+      },
+      {
+        "id": "candidate-6",
+        "recordIds": [
+          "accidentes7_13jul2025datos.195",
+          "accidentes7_13jul2025datos.203"
+        ],
+        "maxGeometrySeparationMeters": 67.01,
+        "removed": false
+      },
+      {
+        "id": "candidate-7",
+        "recordIds": [
+          "accidentes7_13jul2025datos.290",
+          "accidentes7_13jul2025datos.291"
+        ],
+        "maxGeometrySeparationMeters": 148233.32,
+        "removed": false
+      },
+      {
+        "id": "candidate-8",
+        "recordIds": [
+          "accidentes7_13jul2025datos.432",
+          "accidentes7_13jul2025datos.433"
+        ],
+        "maxGeometrySeparationMeters": 0.05,
+        "removed": false
+      }
+    ]
+  },
+  "dateAnomalies": [
+    {
+      "id": "accidentes30jun6jul2025datos.1",
+      "periodId": "2025-06-30_2025-07-06",
+      "road": "Nuevo Necaxa - Tihuatlán (PPS)",
+      "dateRaw": 37439,
+      "date": "2002-07-02",
+      "flags": [
+        "date_outside_source_period"
+      ]
+    },
+    {
+      "id": "accidentes30jun6jul2025datos.17",
+      "periodId": "2025-06-30_2025-07-06",
+      "road": "Perote - Banderilla y Lib. De Xalapa",
+      "dateRaw": 45831,
+      "date": "2025-06-23",
+      "flags": [
+        "date_outside_source_period"
+      ]
+    },
+    {
+      "id": "accidentes30jun6jul2025datos.18",
+      "periodId": "2025-06-30_2025-07-06",
+      "road": "Perote - Banderilla y Lib. De Xalapa",
+      "dateRaw": 45833,
+      "date": "2025-06-25",
+      "flags": [
+        "date_outside_source_period"
+      ]
+    },
+    {
+      "id": "accidentes30jun6jul2025datos.19",
+      "periodId": "2025-06-30_2025-07-06",
+      "road": "Perote - Banderilla y Lib. De Xalapa",
+      "dateRaw": 45833,
+      "date": "2025-06-25",
+      "flags": [
+        "date_outside_source_period"
+      ]
+    },
+    {
+      "id": "accidentes30jun6jul2025datos.20",
+      "periodId": "2025-06-30_2025-07-06",
+      "road": "Perote - Banderilla y Lib. De Xalapa",
+      "dateRaw": 45833,
+      "date": "2025-06-25",
+      "flags": [
+        "date_outside_source_period"
+      ]
+    },
+    {
+      "id": "accidentes30jun6jul2025datos.22",
+      "periodId": "2025-06-30_2025-07-06",
+      "road": "Perote - Banderilla y Lib. De Xalapa",
+      "dateRaw": 45834,
+      "date": "2025-06-26",
+      "flags": [
+        "date_outside_source_period"
+      ]
+    },
+    {
+      "id": "accidentes30jun6jul2025datos.24",
+      "periodId": "2025-06-30_2025-07-06",
+      "road": "Perote - Banderilla y Lib. De Xalapa",
+      "dateRaw": 45833,
+      "date": "2025-06-25",
+      "flags": [
+        "date_outside_source_period"
+      ]
+    },
+    {
+      "id": "accidentes30jun6jul2025datos.41",
+      "periodId": "2025-06-30_2025-07-06",
+      "road": "Libramiento Sur de Guadalajara",
+      "dateRaw": 45752,
+      "date": "2025-04-05",
+      "flags": [
+        "date_outside_source_period"
+      ]
+    },
+    {
+      "id": "accidentes30jun6jul2025datos.126",
+      "periodId": "2025-06-30_2025-07-06",
+      "road": "Armería - Manzanillo",
+      "dateRaw": 46939,
+      "date": "2028-07-05",
+      "flags": [
+        "date_outside_source_period"
+      ]
+    },
+    {
+      "id": "accidentes7_13jul2025datos.436",
+      "periodId": "2025-07-07_2025-07-13",
+      "road": "Cadereyta - Reynosa",
+      "dateRaw": 38542,
+      "date": "2005-07-09",
+      "flags": [
+        "date_outside_source_period"
+      ]
+    }
+  ],
+  "hourBoundaryAnomalies": [
+    {
+      "id": "accidentes30jun6jul2025datos.53",
+      "periodId": "2025-06-30_2025-07-06",
+      "road": "México - Pachuca",
+      "hourRaw": 1,
+      "minuteOfDayApprox": 0,
+      "flags": [
+        "hour_midnight_boundary_ambiguous"
+      ]
+    },
+    {
+      "id": "accidentes30jun6jul2025datos.295",
+      "periodId": "2025-06-30_2025-07-06",
+      "road": "Libramiento de Cuernavaca",
+      "hourRaw": 1,
+      "minuteOfDayApprox": 0,
+      "flags": [
+        "hour_midnight_boundary_ambiguous",
+        "cause_missing_or_unspecified"
+      ]
+    },
+    {
+      "id": "accidentes7_13jul2025datos.132",
+      "periodId": "2025-07-07_2025-07-13",
+      "road": "México - Querétaro",
+      "hourRaw": 1,
+      "minuteOfDayApprox": 0,
+      "flags": [
+        "hour_midnight_boundary_ambiguous",
+        "cause_missing_or_unspecified"
+      ]
+    },
+    {
+      "id": "accidentes7_13jul2025datos.257",
+      "periodId": "2025-07-07_2025-07-13",
+      "road": "Durango - Mazatlán",
+      "hourRaw": 1,
+      "minuteOfDayApprox": 0,
+      "flags": [
+        "hour_midnight_boundary_ambiguous",
+        "cause_missing_or_unspecified",
+        "road_alignment_gt_1000m"
+      ]
+    },
+    {
+      "id": "accidentes7_13jul2025datos.312",
+      "periodId": "2025-07-07_2025-07-13",
+      "road": "La Tinaja - Cosoleacaque",
+      "hourRaw": 1,
+      "minuteOfDayApprox": 0,
+      "flags": [
+        "hour_midnight_boundary_ambiguous",
+        "cause_missing_or_unspecified"
+      ]
+    },
+    {
+      "id": "accidentes7_13jul2025datos.319",
+      "periodId": "2025-07-07_2025-07-13",
+      "road": "Acatzingo - Cd. Mendoza",
+      "hourRaw": 1,
+      "minuteOfDayApprox": 0,
+      "flags": [
+        "hour_midnight_boundary_ambiguous",
+        "cause_missing_or_unspecified"
+      ]
+    }
+  ],
+  "chainageAuxiliaryMismatches": [
+    {
+      "id": "accidentes30jun6jul2025datos.87",
+      "road": "Ent. Tulancingo - Nuevo Necaxa",
+      "kmRaw": "87+400",
+      "sourceAuxiliaryId": 98100,
+      "coordinates": [
+        -98.36025026,
+        20.13887702
+      ]
+    },
+    {
+      "id": "accidentes30jun6jul2025datos.132",
+      "road": "La Marquesa - Lerma",
+      "kmRaw": "35 + 700",
+      "sourceAuxiliaryId": 45700,
+      "coordinates": [
+        -99.38365335,
+        19.30032076
+      ]
+    },
+    {
+      "id": "accidentes30jun6jul2025datos.157",
+      "road": "Tuxtla Gutiérrez - San Cristobal",
+      "kmRaw": "13+100",
+      "sourceAuxiliaryId": 104680,
+      "coordinates": [
+        -99.91825854,
+        19.83276028
+      ]
+    },
+    {
+      "id": "accidentes30jun6jul2025datos.203",
+      "road": "México - Querétaro",
+      "kmRaw": "125.9",
+      "sourceAuxiliaryId": 25900,
+      "coordinates": [
+        -99.76496426,
+        20.18009239
+      ]
+    },
+    {
+      "id": "accidentes30jun6jul2025datos.366",
+      "road": "Querétaro - Irapuato",
+      "kmRaw": "33.8",
+      "sourceAuxiliaryId": 142200,
+      "coordinates": [
+        -100.71810683,
+        20.53435726
+      ]
+    },
+    {
+      "id": "accidentes30jun6jul2025datos.372",
+      "road": "La Tinaja - Cosoleacaque",
+      "kmRaw": "69",
+      "sourceAuxiliaryId": 69,
+      "coordinates": [
+        -95.92988571,
+        18.41154753
+      ]
+    },
+    {
+      "id": "accidentes30jun6jul2025datos.414",
+      "road": "Estación Don - Nogales",
+      "kmRaw": "251",
+      "sourceAuxiliaryId": 215000,
+      "coordinates": [
+        -110.93203941,
+        31.12526311
+      ]
+    },
+    {
+      "id": "accidentes30jun6jul2025datos.422",
+      "road": "Querétaro - Irapuato",
+      "kmRaw": "10",
+      "sourceAuxiliaryId": 10,
+      "coordinates": [
+        -100.49805286,
+        20.56789891
+      ]
+    },
+    {
+      "id": "accidentes30jun6jul2025datos.441",
+      "road": "Cuernavaca - Acapulco",
+      "kmRaw": "366",
+      "sourceAuxiliaryId": 336000,
+      "coordinates": [
+        -99.60938512,
+        17.07430085
+      ]
+    },
+    {
+      "id": "accidentes7_13jul2025datos.92",
+      "road": "Perote - Banderilla y Lib. De Xalapa",
+      "kmRaw": "136+150",
+      "sourceAuxiliaryId": 136500,
+      "coordinates": [
+        -97.02129755,
+        19.64089511
+      ]
+    },
+    {
+      "id": "accidentes7_13jul2025datos.111",
+      "road": "México - Querétaro",
+      "kmRaw": "147",
+      "sourceAuxiliaryId": 84800,
+      "coordinates": [
+        -99.20018733,
+        18.95558433
+      ]
+    },
+    {
+      "id": "accidentes7_13jul2025datos.112",
+      "road": "Libramiento de Cuernavaca",
+      "kmRaw": "84.8",
+      "sourceAuxiliaryId": 147000,
+      "coordinates": [
+        -99.92620073,
+        20.29464132
+      ]
+    },
+    {
+      "id": "accidentes7_13jul2025datos.191",
+      "road": "Libramiento Nororiente de Querétaro",
+      "kmRaw": "4.7",
+      "sourceAuxiliaryId": 80000,
+      "coordinates": [
+        -99.41530375,
+        19.95785129
+      ]
+    },
+    {
+      "id": "accidentes7_13jul2025datos.192",
+      "road": "México - Cuernavaca",
+      "kmRaw": "74.9",
+      "sourceAuxiliaryId": 4700,
+      "coordinates": [
+        -100.25032451,
+        20.59577733
+      ]
+    },
+    {
+      "id": "accidentes7_13jul2025datos.193",
+      "road": "México - Querétaro",
+      "kmRaw": "80",
+      "sourceAuxiliaryId": 74900,
+      "coordinates": [
+        -99.20394961,
+        18.99046699
+      ]
+    },
+    {
+      "id": "accidentes7_13jul2025datos.198",
+      "road": "Cd. Mendoza - Córdoba",
+      "kmRaw": "290.1",
+      "sourceAuxiliaryId": 190100,
+      "coordinates": [
+        -96.96982573,
+        18.88993033
+      ]
+    },
+    {
+      "id": "accidentes7_13jul2025datos.207",
+      "road": "México - Cuernavaca",
+      "kmRaw": "80",
+      "sourceAuxiliaryId": 70000,
+      "coordinates": [
+        -99.34886174,
+        19.89734281
+      ]
+    },
+    {
+      "id": "accidentes7_13jul2025datos.208",
+      "road": "México - Querétaro",
+      "kmRaw": "70",
+      "sourceAuxiliaryId": 80000,
+      "coordinates": [
+        -99.23886871,
+        18.96972888
+      ]
+    },
+    {
+      "id": "accidentes7_13jul2025datos.214",
+      "road": "Ensenada - Tijuana",
+      "kmRaw": "69",
+      "sourceAuxiliaryId": 69,
+      "coordinates": [
+        -116.88243539,
+        32.09243111
+      ]
+    },
+    {
+      "id": "accidentes7_13jul2025datos.291",
+      "road": "Puente de Ixtla - Iguala",
+      "kmRaw": "48.6",
+      "sourceAuxiliaryId": 93100,
+      "coordinates": [
+        -98.41462882,
+        19.25978152
+      ]
+    },
+    {
+      "id": "accidentes7_13jul2025datos.365",
+      "road": "La Pera - Cuautla",
+      "kmRaw": "0.5",
+      "sourceAuxiliaryId": 5,
+      "coordinates": [
+        -99.17075985,
+        19.00906188
+      ]
+    },
+    {
+      "id": "accidentes7_13jul2025datos.372",
+      "road": "México - Querétaro",
+      "kmRaw": "146",
+      "sourceAuxiliaryId": 164000,
+      "coordinates": [
+        -99.91301331,
+        20.2872398
+      ]
+    },
+    {
+      "id": "accidentes7_13jul2025datos.393",
+      "road": "La Pera - Cuautla",
+      "kmRaw": "0.5",
+      "sourceAuxiliaryId": 5,
+      "coordinates": [
+        -99.17075982,
+        19.00906168
+      ]
+    },
+    {
+      "id": "accidentes7_13jul2025datos.399",
+      "road": "México - Puebla",
+      "kmRaw": "96.8",
+      "sourceAuxiliaryId": 46800,
+      "coordinates": [
+        -98.38643416,
+        19.24156206
+      ]
+    },
+    {
+      "id": "accidentes7_13jul2025datos.414",
+      "road": "Ensenada - Tijuana",
+      "kmRaw": "73",
+      "sourceAuxiliaryId": 30000,
+      "coordinates": [
+        -117.05791258,
+        32.37107695
+      ]
+    },
+    {
+      "id": "accidentes7_13jul2025datos.415",
+      "road": "Ensenada - Tijuana",
+      "kmRaw": "30",
+      "sourceAuxiliaryId": 73000,
+      "coordinates": [
+        -116.87734297,
+        32.05720417
+      ]
+    }
+  ],
+  "limitations": [
+    "Sólo dos semanas de red de cuota; no se verificó exhaustividad de notificación ni comparabilidad entre operadores.",
+    "Horas aproximadas y codificación inferida; no se dispone de diccionario de la capa que confirme semántica o zona horaria.",
+    "Hay fechas fuera de periodo, candidatos a duplicado y discrepancias auxiliares de kilometraje. Se preservan para inspección.",
+    "La validez numérica de coordenadas no confirma que pertenezcan a la autopista declarada: corresponde validar distancia al trazo antes de agregar barras sobre cada corredor.",
+    "La categoría causa está ausente o codificada como 0 en muchas filas; no usar para conclusiones causales."
+  ]
+}

@@ -1,0 +1,1 @@
+https://rnc.imt.mx/geoserver/GEOSSI/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=GEOSSI%3Ared_vial_cuota_concesionario_geo&outputFormat=application%2Fjson&maxFeatures=50000&propertyName=id_red%2Cnombre%2Cautoppte%2Ccodigo%2Ccvecarr%2Cfecha_act%2Clongitud%2Cunion_ini%2Cunion_fin%2Cgeom

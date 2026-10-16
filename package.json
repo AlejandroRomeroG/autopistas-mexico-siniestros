@@ -1,0 +1,9 @@
+{
+  "name": "autopistas-mexico-siniestros",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Mapa de registros reales de siniestros en la red de cuota de México",
+  "scripts": { "build": "node scripts/build.mjs", "test": "node --test tests/*.test.mjs", "preview": "python3 -m http.server 4173 --bind 127.0.0.1 --directory docs" },
+  "engines": {"node": ">=20"}
+}

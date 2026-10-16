@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#702781">
+  <meta name="description" content="Explora registros reales de siniestros en autopistas de cuota de México por carretera, tramo y hora aproximada. Piloto con datos de SICT e IMT del 30 de junio al 13 de julio de 2025.">
+  <title>Siniestros en autopistas de México</title>
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./vendor/maplibre-gl.css">
+  <link rel="stylesheet" href="./time-dial.css">
+  <link rel="stylesheet" href="./styles.css">
+  <script src="./vendor/maplibre-gl.js" defer></script>
+  <script src="./app.mjs" type="module"></script>
+</head>
+<body>
+  <main class="app-shell">
+    <aside class="sidebar" id="sidebar" aria-label="Filtros y resumen">
+      <button class="mobile-close" id="close-panel" type="button" aria-label="Cerrar panel de filtros">×</button>
+      <header class="brand">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <div><p class="eyebrow">MÉXICO · RED DE CUOTA</p><h1>Siniestros en<br>autopistas</h1><p class="brand-subtitle">Un mapa para explorar el camino.</p></div>
+      </header>
+      <div class="period-label"><span class="live-dot" aria-hidden="true"></span>30 jun – 13 jul 2025<span class="pilot-tag">PILOTO</span></div>
+      <form id="road-form" class="controls">
+        <label for="road-select">Autopista</label>
+        <select id="road-select" name="road" aria-describedby="road-coverage"><option>Cargando carreteras…</option></select>
+        <p id="road-coverage" class="control-note">Carreteras reportadas por la fuente. El número indica registros ubicables, tras los controles del piloto.</p>
+        <label for="bin-select">Agrupar registros cada</label>
+        <select id="bin-select" name="bin"><option value="1">1 km</option><option value="2">2 km</option><option value="5" selected>5 km</option><option value="10">10 km</option><option value="20">20 km</option></select>
+        <button class="primary-button" id="fit-road" type="submit">Centrar autopista <span aria-hidden="true">↗</span></button>
+      </form>
+      <section class="stats" aria-label="Resumen del filtro actual" aria-live="polite">
+        <div><strong id="stat-count">—</strong><span>registros<br>en mapa</span></div>
+        <div><strong id="stat-bins">—</strong><span>tramos con<br>registros</span></div>
+        <div><strong id="stat-peak">—</strong><span>máximo<br>por tramo</span></div>
+      </section>
+      <div class="selection-summary" id="selection-summary" role="status">Preparando los datos reales del IMT…</div>
+      <p class="coverage-note" id="coverage-note"></p>
+      <button class="text-button records-button" id="open-records" type="button">Ver registros y descargar CSV <span aria-hidden="true">↗</span></button>
+      <div class="sidebar-bottom">
+        <section class="legend" aria-label="Cómo leer el mapa">
+          <p class="eyebrow">CÓMO LEER EL MAPA</p>
+          <div><span class="legend-line" aria-hidden="true"></span>Autopista seleccionada</div>
+          <div><span class="legend-dot" aria-hidden="true"></span>Registro de siniestro</div>
+          <div><span class="legend-gradient" aria-hidden="true"></span>Registros por tramo</div>
+          <div class="legend-scale"><span>Menos</span><span id="legend-max">Más</span></div>
+        </section>
+        <button class="source-button" id="open-sources" type="button"><span class="info-icon" aria-hidden="true">i</span>Datos, cobertura y metodología<span aria-hidden="true">↗</span></button>
+        <p class="small-print">Registros reportados, no una medida del riesgo de viajar.</p>
+      </div>
+    </aside>
+    <section class="map-wrap" aria-label="Mapa de siniestros por autopista">
+      <div id="map" role="region" aria-label="Mapa interactivo de autopistas de México"></div>
+      <canvas id="density-overlay" aria-hidden="true"></canvas>
+      <div class="map-actions">
+        <button class="map-button" id="panel-toggle" type="button" aria-label="Ocultar panel" aria-controls="sidebar" aria-expanded="true"><svg width="20" height="18" viewBox="0 0 20 18" aria-hidden="true"><path d="M2 3h16M2 9h16M2 15h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+        <button class="map-button" id="view-toggle" type="button" aria-label="Inclinar el mapa" aria-pressed="false">3D</button>
+      </div>
+      <div class="map-caption"><span class="caption-dot" aria-hidden="true"></span><span id="map-caption-text">Datos reales · SICT / IMT</span></div>
+      <section class="week-selector" aria-label="Filtrar por semana">
+        <div class="week-title"><span>PERIODO</span><span class="year-tag">2025</span></div>
+        <div id="week-buttons"></div>
+      </section>
+      <section class="clock-card" aria-label="Filtrar por hora aproximada">
+        <div class="clock-heading"><span>HORA DEL DÍA</span><button class="reset-button" id="reset-hours" type="button">Restablecer</button></div>
+        <div id="time-dial"></div>
+        <button class="approx-label" id="hour-method" type="button">Hora aproximada <span aria-hidden="true">ⓘ</span></button>
+      </section>
+      <div class="road-label" id="road-label">Cargando…</div>
+      <div class="empty-state" id="empty-state" hidden><strong>Sin registros en este horario</strong><p>Prueba otro rango de horas o restablece el reloj.</p><button type="button" id="empty-reset">Ver todo el día</button></div>
+      <div class="map-error" id="map-error" hidden></div>
+      <div class="map-tooltip" id="map-tooltip" role="tooltip" hidden></div>
+      <div class="loading" id="loading"><span class="spinner" aria-hidden="true"></span><span>Cargando autopistas y registros…</span></div>
+    </section>
+  </main>
+  <dialog id="sources-dialog" class="data-dialog" aria-labelledby="sources-heading">
+    <div class="dialog-header"><div><p class="eyebrow">FUENTES ABIERTAS</p><h2 id="sources-heading">Datos y cobertura del piloto</h2></div><button class="close-dialog" type="button" aria-label="Cerrar">×</button></div>
+    <div class="dialog-body" id="source-content"></div>
+  </dialog>
+  <dialog id="records-dialog" class="data-dialog records-dialog" aria-labelledby="records-heading">
+    <div class="dialog-header"><div><p class="eyebrow">REGISTROS DEL FILTRO ACTUAL</p><h2 id="records-heading">Siniestros reportados</h2></div><button class="close-dialog" type="button" aria-label="Cerrar">×</button></div>
+    <div class="dialog-body"><p id="records-description"></p><div class="record-tools"><button id="download-csv" class="secondary-button" type="button">Descargar CSV del filtro</button><span id="records-pagination"></span><button class="page-button" id="records-prev" type="button" aria-label="Página anterior">←</button><button class="page-button" id="records-next" type="button" aria-label="Página siguiente">→</button></div><div class="table-scroll"><table><thead><tr><th>Fecha</th><th>Hora aprox.</th><th>Km reportado</th><th>Tipo</th><th>Lesionados</th><th>Fallecidos</th></tr></thead><tbody id="records-body"></tbody></table></div></div>
+  </dialog>
+  <noscript>Activa JavaScript para explorar este mapa. Los datos y el código están disponibles en el repositorio del proyecto.</noscript>
+</body>
+</html>
