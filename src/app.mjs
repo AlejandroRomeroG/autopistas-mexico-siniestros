@@ -4,6 +4,7 @@ import { filterRecords, groupBins, hourLabel, approximateTime, shortDate, escape
 
 const $ = id => document.getElementById(id);
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const compactLayout = () => matchMedia('(max-width:760px), (max-width:1100px) and (max-height:500px)').matches;
 const state = { roadId: '', period: 'all', start: 0, end: 24, bin: 5, page: 0 };
 let data, roadsGeo, map, dial, selectedRoad, selectedFeature, filtered = [], bins = [], anchors = new Map(), scaleMax = 1, barHits = [], markers = [], pendingFrame = false;
 const canvas = $('density-overlay');
@@ -149,7 +150,7 @@ function fitRoad() {
   if (!map) return;
   const bounds=boundsForFeature(selectedFeature);
   if (!bounds) {map.fitBounds([[-117.5,14.7],[-86.7,32.7]],{padding:50,duration:reduceMotion?0:1100});return;}
-  const narrow=innerWidth<=760;
+  const narrow=compactLayout();
   const h=canvas.clientHeight,w=canvas.clientWidth;
   const mapRect=$('map').getBoundingClientRect(),filterRect=$('sidebar').getBoundingClientRect(),dockRect=document.querySelector('.exploration-dock')?.getBoundingClientRect();
   const topCover=document.body.classList.contains('panel-collapsed')?55:Math.max(55,filterRect.bottom-mapRect.top+18);
@@ -283,10 +284,10 @@ async function init(){
     $('road-select').value=state.roadId;$('bin-select').value=String(state.bin);
     dial=new TimeDial($('time-dial'),{start:state.start,end:state.end,onChange:range=>{Object.assign(state,range);update();}});
     selectRoad(state.roadId,false);
-    if(innerWidth<=760){document.body.classList.add('panel-collapsed');$('sidebar').inert=true;$('panel-toggle').setAttribute('aria-expanded','false');$('panel-toggle').setAttribute('aria-label','Mostrar panel');}
+    if(compactLayout()){document.body.classList.add('panel-collapsed');$('sidebar').inert=true;$('panel-toggle').setAttribute('aria-expanded','false');$('panel-toggle').setAttribute('aria-label','Mostrar panel');}
     $('road-select').addEventListener('change',event=>selectRoad(event.target.value));
     $('bin-select').addEventListener('change',event=>{state.bin=+event.target.value;buildAnchors();update();});
-    $('road-form').addEventListener('submit',event=>{event.preventDefault();fitRoad();if(innerWidth<=760){document.body.classList.add('panel-collapsed');$('sidebar').inert=true;$('panel-toggle').setAttribute('aria-expanded','false');$('panel-toggle').setAttribute('aria-label','Mostrar panel');$('panel-toggle').focus();}});
+    $('road-form').addEventListener('submit',event=>{event.preventDefault();if(compactLayout()){document.body.classList.add('panel-collapsed');$('sidebar').inert=true;$('panel-toggle').setAttribute('aria-expanded','false');$('panel-toggle').setAttribute('aria-label','Mostrar panel');$('panel-toggle').focus();}fitRoad();});
     $('panel-toggle').addEventListener('click',()=>{const collapsed=document.body.classList.toggle('panel-collapsed');$('sidebar').inert=collapsed;$('panel-toggle').setAttribute('aria-expanded',String(!collapsed));$('panel-toggle').setAttribute('aria-label',collapsed?'Mostrar panel':'Ocultar panel');setTimeout(()=>{map.resize();scheduleDraw();},260);});
     $('close-panel').addEventListener('click',()=>{document.body.classList.add('panel-collapsed');$('sidebar').inert=true;$('panel-toggle').setAttribute('aria-expanded','false');$('panel-toggle').setAttribute('aria-label','Mostrar panel');$('panel-toggle').focus();});
     $('view-toggle').addEventListener('click',()=>{const tilt=map.getPitch()<10;$('view-toggle').setAttribute('aria-pressed',String(tilt));$('view-toggle').setAttribute('aria-label',tilt?'Volver a vista plana':'Inclinar el mapa');map.easeTo({pitch:tilt?48:0,duration:reduceMotion?0:800});});
