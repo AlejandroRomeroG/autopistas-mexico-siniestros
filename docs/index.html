@@ -28,6 +28,7 @@
     </header>
     <aside class="sidebar" id="sidebar" aria-label="Filtros y resumen">
       <button class="mobile-close" id="close-panel" type="button" aria-label="Cerrar panel de filtros">×</button>
+      <div class="panel-heading"><p class="eyebrow">EXPLORAR EL CAMINO</p><h2>Tu recorrido<span aria-hidden="true">↘</span></h2></div>
       <div class="filter-primary">
         <form id="road-form" class="controls">
           <div class="field road-field"><label for="road-select"><span class="field-index">01</span> Elige una autopista</label><select id="road-select" name="road" aria-describedby="road-coverage"><option>Cargando carreteras…</option></select></div>
@@ -38,6 +39,7 @@
       </div>
       <div class="filter-context"><div class="selection-summary" id="selection-summary" role="status">Preparando los datos reales del IMT…</div><p class="coverage-note" id="coverage-note"></p></div>
       <p id="road-coverage" class="control-note">El selector muestra carreteras reportadas por la fuente y sus registros ubicables, tras los controles del piloto.</p>
+      <section class="map-key" aria-label="Cómo leer el mapa"><p class="eyebrow">LECTURA DEL MAPA</p><div class="key-row"><span class="legend-line" aria-hidden="true"></span><span>Autopista seleccionada</span></div><div class="key-row"><span class="legend-guide" aria-hidden="true"></span><span>Guía de barras<small>Eje visual simplificado</small></span></div><div class="key-row"><span class="legend-dot" aria-hidden="true"></span><span>Registro de siniestro</span></div><div class="key-gradient"><span>Registros por tramo</span><i class="legend-gradient" aria-hidden="true"></i><div class="legend-scale"><span>Menos</span><span id="legend-max">Más</span></div></div><p class="small-print">Los conteos no miden el riesgo de viajar.</p></section>
     </aside>
     <section class="map-wrap" aria-label="Mapa de siniestros por autopista">
       <div id="map" role="region" aria-label="Mapa interactivo de autopistas de México"></div><canvas id="density-overlay" aria-hidden="true"></canvas>
@@ -47,7 +49,7 @@
         <section class="week-selector" aria-label="Filtrar por semana"><div class="week-title"><span class="field-index">03</span><span>PERIODO</span><span class="year-tag">2025</span></div><div id="week-buttons"></div><p class="period-footnote">Registros de las dos semanas<br>publicadas por SICT / IMT.</p></section>
         <section class="clock-card" aria-label="Filtrar por hora aproximada"><div class="clock-heading"><span><span class="field-index">04</span> HORA DEL DÍA</span><button class="reset-button" id="reset-hours" type="button">Todo el día <span aria-hidden="true">↺</span></button></div><div id="time-dial"></div><button class="approx-label" id="hour-method" type="button">Hora aproximada <span aria-hidden="true">↗</span></button></section>
       </div>
-      <section class="map-key" aria-label="Cómo leer el mapa"><p class="eyebrow">LECTURA DEL MAPA</p><div class="key-row"><span class="legend-line" aria-hidden="true"></span><span>Autopista seleccionada</span></div><div class="key-row"><span class="legend-dot" aria-hidden="true"></span><span>Registro de siniestro</span></div><div class="key-gradient"><span>Registros por tramo</span><i class="legend-gradient" aria-hidden="true"></i><div class="legend-scale"><span>Menos</span><span id="legend-max">Más</span></div></div><p class="small-print">Los conteos no miden el riesgo de viajar.</p></section>
+
       <div class="empty-state" id="empty-state" hidden><strong>Sin registros en este horario</strong><p>Prueba otro rango de horas o restablece el reloj.</p><button type="button" id="empty-reset">Ver todo el día</button></div><div class="map-error" id="map-error" hidden></div><div class="map-tooltip" id="map-tooltip" role="tooltip" hidden></div><div class="loading" id="loading"><span class="spinner" aria-hidden="true"></span><span>Cargando autopistas y registros…</span></div>
     </section>
     <footer class="site-footer"><div class="map-caption"><span class="caption-dot" aria-hidden="true"></span><span id="map-caption-text">Datos reales · SICT / IMT</span></div><button class="text-button records-button" id="open-records" type="button">Explorar registros <span class="csv-label">/ Descargar CSV</span> <span aria-hidden="true">↗</span></button><span class="footer-signature">ARG <span aria-hidden="true">/</span> CARTOGRAFÍA</span></footer>

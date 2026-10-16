@@ -31,7 +31,9 @@ La hora se interpreta como fracción de día: `(horaRaw % 1) * 24`. Los valores 
 
 Las líneas proceden de la capa oficial `GEOSSI:red_vial_cuota_concesionario_geo`. Se conservan calzadas y ramales y se usan alias explícitos de nombres; no se crean conectores entre puntos de accidentes. La asociación errónea de concesión para México–Pachuca en la fuente se trata mediante el nombre de vía. Las coordenadas se redondean a seis decimales y sólo se deduplican líneas exactamente iguales dentro de una misma identidad de carretera.
 
-Cada barra representa el número de registros por intervalo del **kilometraje reportado**, sumando ambos sentidos. Se ancla al punto del trazo oficial más cercano a un registro representativo del intervalo; no es una interpolación de postes kilométricos. Se mantiene la escala de altura y color de ambas semanas y todo el día para comparar filtros. El ancho se adapta al zoom y no expresa longitud geográfica exacta. La suma de las calzadas no se presenta como longitud de carretera.
+Cada barra representa el número de registros por intervalo del **kilometraje reportado**, sumando ambos sentidos. Un registro representativo del intervalo permite asociarla con el corredor vial; no es una interpolación de postes kilométricos. Las barras se distribuyen sobre una **guía visual simplificada**, dibujada con línea discontinua junto al trazo real. Esta guía suaviza las curvas y mantiene orientaciones coherentes para reducir cruces entre barras; sus bases no son ubicaciones precisas de accidentes.
+
+La guía parte de la geometría oficial conectada, sin unir tramos desconectados ni ordenar la vía ciegamente por los kilómetros reportados. Las calzadas paralelas comparten un eje gráfico cuando corresponden al mismo corredor. El ancho se limita por el espacio disponible entre barras y no expresa longitud geográfica exacta. Los ajustes de altura son comunes a todas las barras, conservando su proporción; la geometría y las escalas de referencia usan ambas semanas y todo el día y no cambian al filtrar horas o semana. La suma de las calzadas no se presenta como longitud de carretera.
 
 Los puntos conservan las coordenadas originales. Los registros a más de 1 km del trazo o sin trazo se conservan en el JSON y la auditoría, pero no se dibujan. Un registro ubicable tiene `kmRaw=148+18`, no interpretable sin suponer una corrección: aparece como punto y queda fuera de las barras.
 
@@ -83,7 +85,7 @@ GitHub Pages se configura desde `main`, carpeta `/docs`. `npm run build` genera 
 
 ## Identidad visual y temas
 
-La composición actual toma la identidad del [sitio personal de Alejandro Romero González](https://alejandroromerog.github.io/), con referencias de TesisCIDE y Movilidad Integrada CDMX. Ofrece tema claro (crema/arena, acento lila profundo) y oscuro (carbón verdoso, texto crema, lila suave). La elección se guarda sólo para este proyecto; la primera visita sigue la preferencia del sistema. El fondo cartográfico cambia junto con la interfaz.
+La composición actual toma la identidad del [sitio personal de Alejandro Romero González](https://alejandroromerog.github.io/), con referencias de TesisCIDE y Movilidad Integrada CDMX. Los controles principales y la leyenda están en un panel derecho; el periodo y el reloj permanecen visibles junto al mapa. Ofrece tema claro (crema/arena, acento lila profundo) y oscuro (carbón verdoso, texto crema, lila suave). La elección se guarda sólo para este proyecto; la primera visita sigue la preferencia del sistema. El fondo cartográfico cambia junto con la interfaz.
 
 ## Búsqueda de históricos adicionales
 
