@@ -16,8 +16,11 @@ function currentTheme(){return document.documentElement.dataset.theme==='dark'?'
 function updateMapTheme(){
   if(!map)return;
   const colors=themeColors(currentTheme());
-  map.getSource('basemap')?.setTiles(basemapTiles(currentTheme()));
-  map.getSource('basemap-labels')?.setTiles(basemapTiles(currentTheme(),true));
+  for(const theme of ['light','dark']) for(const suffix of ['','-labels']){
+    const layer=`basemap-${theme}${suffix}`;
+    if(map.getLayer(layer))map.setLayoutProperty(layer,'visibility',theme===currentTheme()?'visible':'none');
+  }
+  $('map-error').hidden=true;
   for(const layer of ['selected-road','accident-points']) if(map.getLayer(layer)) map.setPaintProperty(layer,layer==='selected-road'?'line-color':'circle-color',colors.accent);
   if(map.getLayer('road-halo'))map.setPaintProperty('road-halo','line-color',colors.halo);
   if(map.getLayer('all-roads'))map.setPaintProperty('all-roads','line-color',colors.context);
@@ -218,8 +221,15 @@ function inspectMap(event){
 }
 
 function createMap() {
-  const colors=themeColors(currentTheme());
-  map=new maplibregl.Map({container:'map',center:[-99.5,20.2],zoom:7.2,maxZoom:16,canvasContextAttributes:{antialias:true,preserveDrawingBuffer:true},attributionControl:true,style:{version:8,sources:{basemap:{type:'raster',tiles:basemapTiles(currentTheme()),tileSize:256,maxzoom:16,attribution:'Tiles © Esri · Sources: Esri, HERE, Garmin, © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>'},'basemap-labels':{type:'raster',tiles:basemapTiles(currentTheme(),true),tileSize:256,maxzoom:16}},layers:[{id:'basemap',type:'raster',source:'basemap'},{id:'basemap-labels',type:'raster',source:'basemap-labels'}]}});
+  const sources={},layers=[];
+  // Keep each theme's raster cache intact when switching during a camera movement.
+  for(const theme of ['light','dark'])for(const reference of [false,true]){
+    const id=`basemap-${theme}${reference?'-labels':''}`;
+    sources[id]={type:'raster',tiles:basemapTiles(theme,reference),tileSize:256,maxzoom:16};
+    if(!reference)sources[id].attribution='Tiles © Esri · Sources: Esri, HERE, Garmin, © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>';
+    layers.push({id,type:'raster',source:id,layout:{visibility:theme===currentTheme()?'visible':'none'}});
+  }
+  map=new maplibregl.Map({container:'map',center:[-99.5,20.2],zoom:7.2,maxZoom:16,canvasContextAttributes:{antialias:true,preserveDrawingBuffer:true},attributionControl:true,style:{version:8,sources,layers}});
   map.addControl(new maplibregl.NavigationControl({showCompass:false}),'top-right');
   map.on('load',()=>{
     map.addSource('all-roads',{type:'geojson',data:roadsGeo});
@@ -239,8 +249,7 @@ function createMap() {
   map.on('mouseout',hideTooltip);
   map.on('movestart',hideTooltip);
   map.on('click',event=>{const hit=barHits.find(h=>inPolygon(event.point,h.points));if(hit){openRecords();}});
-  let tileErrorShown=false;
-  map.on('error',event=>{if(event.error?.message?.includes('tile')&&!tileErrorShown){tileErrorShown=true;$('map-error').textContent='El fondo cartográfico no se pudo cargar. Los trazados y los registros siguen disponibles.';$('map-error').hidden=false;}});
+  map.on('error',event=>{if(event.sourceId?.startsWith(`basemap-${currentTheme()}`)&&event.error?.message?.includes('tile')){$('map-error').textContent='No se pudo cargar parte del fondo cartográfico. Los trazados y los registros siguen disponibles.';$('map-error').hidden=false;}});
   new ResizeObserver(()=>{map.resize();scheduleDraw();}).observe($('map'));
 }
 
