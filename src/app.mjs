@@ -20,7 +20,6 @@ function updateMapTheme(){
     const layer=`basemap-${theme}${suffix}`;
     if(map.getLayer(layer))map.setLayoutProperty(layer,'visibility',theme===currentTheme()?'visible':'none');
   }
-  $('map-error').hidden=true;
   for(const layer of ['selected-road','accident-points']) if(map.getLayer(layer)) map.setPaintProperty(layer,layer==='selected-road'?'line-color':'circle-color',colors.accent);
   if(map.getLayer('road-halo'))map.setPaintProperty('road-halo','line-color',colors.halo);
   if(map.getLayer('all-roads'))map.setPaintProperty('all-roads','line-color',colors.context);
@@ -31,6 +30,7 @@ function initializeTheme(){
   const system=matchMedia('(prefers-color-scheme: dark)');
   let preference;try{preference=localStorage.getItem(THEME_STORAGE_KEY);}catch{}
   const apply=theme=>{
+    if(theme!==currentTheme())$('map-error').hidden=true;
     document.documentElement.dataset.theme=theme;
     const button=$('theme-toggle');
     if(button){button.setAttribute('aria-pressed',String(theme==='dark'));button.setAttribute('aria-label',`Cambiar a tema ${theme==='dark'?'claro':'oscuro'}`);button.title=button.getAttribute('aria-label');}
@@ -249,7 +249,7 @@ function createMap() {
   map.on('mouseout',hideTooltip);
   map.on('movestart',hideTooltip);
   map.on('click',event=>{const hit=barHits.find(h=>inPolygon(event.point,h.points));if(hit){openRecords();}});
-  map.on('error',event=>{if(event.sourceId?.startsWith(`basemap-${currentTheme()}`)&&event.error?.message?.includes('tile')){$('map-error').textContent='No se pudo cargar parte del fondo cartográfico. Los trazados y los registros siguen disponibles.';$('map-error').hidden=false;}});
+  map.on('error',event=>{if(event.sourceId?.startsWith(`basemap-${currentTheme()}`)){$('map-error').textContent='No se pudo cargar parte del fondo cartográfico. Los trazados y los registros siguen disponibles.';$('map-error').hidden=false;}});
   new ResizeObserver(()=>{map.resize();scheduleDraw();}).observe($('map'));
 }
 
